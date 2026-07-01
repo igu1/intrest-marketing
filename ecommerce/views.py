@@ -81,12 +81,17 @@ def _get_visitor(request):
     if chat_id:
         if not visitor.chat_id:
             visitor.chat_id = chat_id
+            visitor.save(update_fields=["chat_id"])
         from dashboard.models import IdentifiedUser
         try:
             ident = IdentifiedUser.objects.get(chat_id=chat_id)
-            if visitor.username != ident.username:
+            is_auto_name = ident.username.startswith("user_") and len(ident.username) <= 18
+            if not is_auto_name and visitor.username != ident.username:
                 visitor.username = ident.username
                 visitor.save(update_fields=["username"])
+            elif is_auto_name and visitor.username and not visitor.username.startswith("user_"):
+                ident.username = visitor.username
+                ident.save()
         except IdentifiedUser.DoesNotExist:
             if not visitor.username:
                 visitor.username = f"user_{chat_id[:8]}"
@@ -292,6 +297,16 @@ def set_name(request):
         if visitor.username != name:
             visitor.username = name
             visitor.save(update_fields=["username"])
+        chat_id = request.session.get("chat_id")
+        if chat_id:
+            from dashboard.models import IdentifiedUser
+            try:
+                ident = IdentifiedUser.objects.get(chat_id=chat_id)
+                if ident.username != name:
+                    ident.username = name
+                    ident.save()
+            except IdentifiedUser.DoesNotExist:
+                pass
         return JsonResponse({"ok": True, "name": name})
     return JsonResponse({"ok": False, "error": "Name is required"}, status=400)
 

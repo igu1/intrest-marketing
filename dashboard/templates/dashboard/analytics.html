@@ -471,12 +471,6 @@
                 This product was selected based on the user's scrolling and clicking behavior.
             </p>
             {% else %}
-            <div style="margin-bottom:12px;">
-                <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
-                    <i class="fas fa-info-circle" style="margin-right:6px;color:var(--warning);"></i>
-                    No engagement data yet. Send a product to get them interested.
-                </p>
-            </div>
             {% if featured_products %}
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px;">
                 {% for fp in featured_products %}

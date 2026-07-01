@@ -151,42 +151,60 @@
         if (!sheet) { showToast('Please upload a recipient sheet.', 'error'); return; }
 
         btn.disabled = true;
-        btn.innerHTML = '<div class="spinner"></div> Sending...';
+        btn.innerHTML = '<div class="spinner"></div> Starting...';
         progressBar.classList.add('active');
 
         const formData = new FormData(this);
 
         try {
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress = Math.min(progress + Math.random() * 15, 90);
-                progressFill.style.width = progress + '%';
-            }, 500);
-
             const resp = await fetch('{% url "dashboard:send_bulk" %}', {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-CSRFToken': getCookie('csrftoken') }
             });
             const data = await resp.json();
-            clearInterval(interval);
-            progressFill.style.width = '100%';
 
-            if (data.ok) {
-                showToast(`Sent ${data.sent}/${data.total} messages! (${data.failed} failed)`, 'success');
-                setTimeout(() => location.reload(), 2000);
-            } else {
-                showToast(data.error || 'Failed to send messages.', 'error');
-            }
-        } catch (err) {
-            showToast('Network error. Please try again.', 'error');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Messages';
-            setTimeout(() => {
+            if (!data.ok) {
+                showToast(data.error || 'Failed to start campaign.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Messages';
                 progressBar.classList.remove('active');
                 progressFill.style.width = '0%';
-            }, 2000);
+                return;
+            }
+
+            const campaignId = data.campaign_id;
+            const totalRecipients = data.total;
+            let pollInterval;
+
+            pollInterval = setInterval(async () => {
+                try {
+                    const pr = await fetch('/dashboard/bulk-progress/' + campaignId + '/');
+                    const pd = await pr.json();
+                    if (pd.ok) {
+                        const done = pd.sent + pd.failed;
+                        const pct = totalRecipients > 0 ? (done / totalRecipients) * 100 : 0;
+                        progressFill.style.width = pct + '%';
+                        btn.innerHTML = '<div class="spinner"></div> Sent ' + done + '/' + totalRecipients;
+
+                        if (pd.status === 'completed') {
+                            clearInterval(pollInterval);
+                            progressFill.style.width = '100%';
+                            showToast('Sent ' + pd.sent + '/' + totalRecipients + ' messages (' + pd.failed + ' failed)', 'success');
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Messages';
+                            setTimeout(() => location.reload(), 3000);
+                        }
+                    }
+                } catch (e) {
+                }
+            }, 1500);
+        } catch (err) {
+            showToast('Network error. Please try again.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Messages';
+            progressBar.classList.remove('active');
+            progressFill.style.width = '0%';
         }
     });
 

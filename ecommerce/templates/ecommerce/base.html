@@ -747,6 +747,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    {% csrf_token %}
     <header class="header">
         <div class="header-top">
             <a href="{% url 'ecommerce:home' %}" class="logo">
