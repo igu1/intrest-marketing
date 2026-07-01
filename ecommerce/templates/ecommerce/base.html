@@ -656,6 +656,93 @@
         }
         .send-status.success { background: #f0f9eb; color: var(--amazon-green); }
         .send-status.error { background: #fef0f0; color: #f56c6c; }
+        
+        /* ─── Name Modal ─── */
+        .name-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .name-overlay.hidden { display: none; }
+        .name-modal {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 40px 32px 32px;
+            width: 400px;
+            max-width: 90vw;
+            text-align: center;
+            box-shadow: 0 24px 48px rgba(0,0,0,0.3);
+            animation: fadeUp 0.3s ease;
+        }
+        .name-modal .icon {
+            font-size: 48px;
+            color: var(--amazon-orange);
+            margin-bottom: 12px;
+        }
+        .name-modal h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .name-modal p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+        .name-modal input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+            text-align: center;
+        }
+        .name-modal input:focus {
+            border-color: var(--amazon-orange);
+            box-shadow: 0 0 0 3px rgba(254,189,105,0.2);
+        }
+        .name-modal button {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: var(--amazon-orange);
+            color: var(--amazon-dark);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .name-modal button:hover { background: var(--amazon-orange-hover); }
+        .name-modal button:disabled { opacity: 0.5; cursor: not-allowed; }
+        @keyframes fadeUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .name-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 12px 4px 8px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #fff;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .name-badge:hover { background: rgba(255,255,255,0.2); }
+        .name-badge i { font-size: 12px; color: var(--amazon-orange); }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -686,9 +773,12 @@
             
             <div class="header-nav">
                 <a href="{% url 'ecommerce:analytics' %}" class="nav-btn">
-                    <span class="small">Hello, User</span>
+                    <span class="small">Hello, <span id="headerName">{{ visitor_name|default:"User" }}</span></span>
                     <span class="big">Analytics</span>
                 </a>
+                <span class="name-badge" id="nameBadge" onclick="showNameModal()">
+                    <i class="fas fa-pen"></i> <span id="badgeName">{{ visitor_name|default:"Set Name" }}</span>
+                </span>
                 <a href="{% url 'dashboard:home' %}" class="nav-btn" target="_blank">
                     <span class="small">Admin</span>
                     <span class="big">Dashboard</span>
@@ -722,6 +812,16 @@
         <div class="toast-actions">
             <a href="{% url 'ecommerce:cart' %}" class="btn-amazon btn-amazon-secondary">Go to Cart</a>
             <button class="btn-amazon btn-amazon-outline" onclick="document.getElementById('cartToast').classList.remove('show')">Continue</button>
+        </div>
+    </div>
+
+    <div class="name-overlay {% if visitor_name %}hidden{% endif %}" id="nameOverlay">
+        <div class="name-modal">
+            <div class="icon"><i class="fas fa-user-astronaut"></i></div>
+            <h2>Welcome to ShopPulse!</h2>
+            <p>Enter your name so we can personalize your experience and track your analytics.</p>
+            <input type="text" id="nameInput" placeholder="Your name..." maxlength="50" autocomplete="off">
+            <button id="nameSubmitBtn" onclick="saveName()">Continue</button>
         </div>
     </div>
 
@@ -899,6 +999,52 @@
                 dwellStartTime = Date.now();
             }
         }, 20000);
+
+        // ─── Name Modal ───
+        function showNameModal() {
+            document.getElementById('nameOverlay').classList.remove('hidden');
+            document.getElementById('nameInput').focus();
+        }
+
+        async function saveName() {
+            const input = document.getElementById('nameInput');
+            const btn = document.getElementById('nameSubmitBtn');
+            const name = input.value.trim();
+            if (!name) { input.focus(); return; }
+
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            try {
+                const resp = await fetch('/api/set-name/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({ name }),
+                });
+                const data = await resp.json();
+                if (data.ok) {
+                    document.getElementById('nameOverlay').classList.add('hidden');
+                    document.getElementById('headerName').textContent = name;
+                    document.getElementById('badgeName').textContent = name;
+                }
+            } catch (e) {
+                console.error('Name save error:', e);
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Continue';
+        }
+
+        document.getElementById('nameInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') saveName();
+        });
+
+        if (!document.getElementById('nameOverlay').classList.contains('hidden')) {
+            document.getElementById('nameInput').focus();
+        }
     </script>
     {% block extra_js %}{% endblock %}
 

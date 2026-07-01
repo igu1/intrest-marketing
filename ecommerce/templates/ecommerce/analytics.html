@@ -160,7 +160,7 @@
 </div>
 
 <div class="analytics-hero">
-    <h1>Your Analytics</h1>
+    <h1>{% if visitor_name %}{{ visitor_name }}'s Analytics{% else %}Your Analytics{% endif %}</h1>
     <p>Track your engagement, browsing behavior, and personalized recommendations.</p>
 </div>
 

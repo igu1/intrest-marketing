@@ -72,6 +72,11 @@ def _get_visitor(request):
 
     visitor = get_or_create_visitor(session_id)
 
+    visitor_name = request.session.get("visitor_name", "")
+    if visitor_name and visitor.username != visitor_name:
+        visitor.username = visitor_name
+        visitor.save(update_fields=["username"])
+
     chat_id = request.session.get("chat_id")
     if chat_id:
         if not visitor.chat_id:
@@ -270,8 +275,25 @@ def analytics(request):
         "chat_id": chat_id,
         "cart_count": _get_cart_count(request),
         "categories": Category.objects.all(),
+        "visitor_name": visitor.username or request.session.get("visitor_name", ""),
     }
     return render(request, "ecommerce/analytics.html", context)
+
+
+# ─── Set Name ───
+@require_POST
+def set_name(request):
+    data = json.loads(request.body)
+    name = data.get("name", "").strip()
+    if name:
+        request.session["visitor_name"] = name
+        request.session.modified = True
+        visitor = _get_visitor(request)
+        if visitor.username != name:
+            visitor.username = name
+            visitor.save(update_fields=["username"])
+        return JsonResponse({"ok": True, "name": name})
+    return JsonResponse({"ok": False, "error": "Name is required"}, status=400)
 
 
 # ─── Cart Views ───

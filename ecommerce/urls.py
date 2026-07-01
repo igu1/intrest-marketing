@@ -14,4 +14,5 @@ urlpatterns = [
     path("api/cart/add/", views.api_cart_add, name="api_cart_add"),
     path("api/cart/update/", views.api_cart_update, name="api_cart_update"),
     path("api/cart/remove/", views.api_cart_remove, name="api_cart_remove"),
+    path("api/set-name/", views.set_name, name="set_name"),
 ]
