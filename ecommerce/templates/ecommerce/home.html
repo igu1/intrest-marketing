@@ -1,0 +1,148 @@
+{% extends "ecommerce/base.html" %}
+
+{% block title %}ShopPulse - Online Shopping Store{% endblock %}
+
+{% block body %}
+<div class="banner-amazon">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:40px;">
+        <div>
+            <h1>Great Deals, Delivered Fast</h1>
+            <p>Discover premium products with unbeatable prices. Free shipping on orders over ₹50.</p>
+            <a href="{% url 'ecommerce:product_list' %}" class="banner-btn">
+                <i class="fas fa-shopping-bag"></i> Shop Now
+            </a>
+        </div>
+        <div style="font-size:80px;color:#ddd;opacity:0.5;">
+            <i class="fas fa-box-open"></i>
+        </div>
+    </div>
+</div>
+
+{% if recommendations %}
+<section class="section-amazon" data-section="recommendations">
+    <div class="section-header-amazon">
+        <h2>Recommended for You</h2>
+    </div>
+    <div class="product-grid-amazon">
+        {% for product in recommendations %}
+        <div class="card-amazon" onclick="window.location='{% url 'ecommerce:product_detail' product.slug %}'">
+            <div class="card-img">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                <i class="fas fa-image" style="font-size:48px;color:#ccc;"></i>
+                {% endif %}
+                {% if product.discount_percent %}
+                <span class="discount-badge">-{{ product.discount_percent }}%</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="card-title">{{ product.name }}</div>
+                <div class="card-rating">
+                    <span class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </span>
+                    <span class="count">1,234</span>
+                </div>
+                <div class="card-price">
+                    <span class="current">₹{{ product.price }}</span>
+                    {% if product.original_price %}<span class="original">₹{{ product.original_price }}</span>{% endif %}
+                </div>
+                <div class="card-prime">
+                    <i class="fas fa-shipping-fast"></i> FREE Delivery
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-amazon btn-amazon-primary" onclick="event.stopPropagation(); addToCart({{ product.id }}, '{{ product.name|escapejs }}');">
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if featured %}
+<section class="section-amazon" id="featured" data-section="featured">
+    <div class="section-header-amazon">
+        <h2>Featured Products</h2>
+        <a href="{% url 'ecommerce:product_list' %}">See more <i class="fas fa-chevron-right" style="font-size:10px;"></i></a>
+    </div>
+    <div class="product-grid-amazon">
+        {% for product in featured %}
+        <div class="card-amazon" onclick="window.location='{% url 'ecommerce:product_detail' product.slug %}'">
+            <div class="card-img">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                <i class="fas fa-image" style="font-size:48px;color:#ccc;"></i>
+                {% endif %}
+                {% if product.discount_percent %}
+                <span class="discount-badge">-{{ product.discount_percent }}%</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="card-title">{{ product.name }}</div>
+                <div class="card-rating">
+                    <span class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </span>
+                    <span class="count">2,456</span>
+                </div>
+                <div class="card-price">
+                    <span class="current">₹{{ product.price }}</span>
+                    {% if product.original_price %}<span class="original">₹{{ product.original_price }}</span>{% endif %}
+                </div>
+                <div class="card-prime">
+                    <i class="fas fa-shipping-fast"></i> FREE Delivery
+                </div>
+                <div class="card-delivery">Get it by <b>Tomorrow</b></div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-amazon btn-amazon-primary" onclick="event.stopPropagation(); addToCart({{ product.id }}, '{{ product.name|escapejs }}');">
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if categories %}
+<section class="section-amazon" data-section="categories">
+    <div class="section-header-amazon">
+        <h2>Shop by Category</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
+        {% for cat in categories %}
+        <a href="{% url 'ecommerce:product_list' %}?category={{ cat.slug }}" style="background:var(--surface);border-radius:var(--radius);padding:20px;text-align:center;border:1px solid var(--border-light);transition:var(--transition);box-shadow:var(--shadow);">
+            <div style="font-size:36px;color:var(--amazon-blue);margin-bottom:8px;">
+                <i class="fas fa-{{ cat.icon|default:'box' }}"></i>
+            </div>
+            <div style="font-size:15px;font-weight:600;color:var(--text);">{{ cat.name }}</div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<section class="section-amazon">
+    <div style="background:var(--surface);border-radius:var(--radius);padding:24px;border:1px solid var(--border-light);text-align:center;">
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:8px;">See personalized recommendations</h2>
+        <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px;">Based on your browsing behavior</p>
+        <a href="{% url 'ecommerce:analytics' %}" class="btn-amazon btn-amazon-dark" style="width:auto;display:inline-flex;">
+            <i class="fas fa-chart-bar"></i> View Your Analytics
+        </a>
+    </div>
+</section>
+{% endblock %}

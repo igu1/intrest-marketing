@@ -1,0 +1,574 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Analytics - ShopPulse{% endblock %}
+
+{% block extra_css %}
+<style>
+    .analytics-header {
+        margin-bottom: 32px;
+    }
+    .analytics-header h1 {
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .analytics-header p {
+        color: var(--text-secondary);
+        margin-top: 4px;
+    }
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+    .mini-stat {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 20px;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        border: 1px solid var(--border);
+    }
+    .mini-stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: transparent; }
+    .mini-stat .ms-icon {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+    .mini-stat .ms-icon.c1 { background: #CCFBF1; color: var(--primary); }
+    .mini-stat .ms-icon.c2 { background: #DBEAFE; color: var(--info); }
+    .mini-stat .ms-icon.c3 { background: #D1FAE5; color: var(--success); }
+    .mini-stat .ms-icon.c4 { background: #FEE2E2; color: var(--danger); }
+    .mini-stat .ms-icon.c5 { background: #FEF3C7; color: var(--warning); }
+    .mini-stat .ms-icon.c6 { background: #E0E7FF; color: #6366F1; }
+    .mini-stat .ms-value { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+    .mini-stat .ms-label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+
+    .bar-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    .bar-row .bar-label {
+        width: 140px;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-shrink: 0;
+        color: var(--text);
+    }
+    .bar-row .bar-track {
+        flex: 1;
+        height: 28px;
+        background: var(--bg);
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative;
+    }
+    .bar-row .bar-fill {
+        height: 100%;
+        border-radius: 6px;
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+        min-width: 32px;
+    }
+    .bar-fill.teal { background: linear-gradient(90deg, var(--primary), var(--primary-light)); }
+    .bar-fill.green { background: linear-gradient(90deg, #10B981, #34D399); }
+    .bar-fill.blue { background: linear-gradient(90deg, #3B82F6, #60A5FA); }
+    .bar-fill.orange { background: linear-gradient(90deg, #F59E0B, #FBBF24); }
+    .bar-fill.red { background: linear-gradient(90deg, #EF4444, #F87171); }
+    .bar-fill.pink { background: linear-gradient(90deg, #EC4899, #F472B6); }
+
+    .user-card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 16px 20px;
+        box-shadow: var(--shadow);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: var(--transition);
+        border: 1px solid var(--border);
+        cursor: pointer;
+    }
+    .user-card:hover { box-shadow: var(--shadow-lg); transform: translateX(4px); border-color: transparent; }
+    .user-avatar {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    }
+    .user-card .user-info { flex: 1; min-width: 0; }
+    .user-card .user-name { font-weight: 700; font-size: 14px; }
+    .user-card .user-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .user-card .user-stats {
+        display: flex;
+        gap: 16px;
+        flex-shrink: 0;
+    }
+    .user-card .user-stat-item { text-align: center; }
+    .user-card .user-stat-item .sv { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
+    .user-card .user-stat-item .sl { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; }
+    .temp-badge {
+        padding: 4px 10px;
+        border-radius: 99px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        letter-spacing: -0.3px;
+    }
+    .section-title i { color: var(--primary); }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-light);
+    }
+    .empty-state i { font-size: 40px; margin-bottom: 12px; display: block; }
+
+    .user-expand {
+        display: none;
+        padding: 20px;
+        background: var(--bg);
+        border-radius: 0 0 var(--radius) var(--radius);
+        margin-top: -12px;
+        margin-bottom: 12px;
+        border: 1px solid var(--border);
+        border-top: none;
+        animation: fadeUp 0.3s ease;
+    }
+    .user-expand.open {
+        display: block;
+    }
+    .user-product-preview {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+    .user-product-preview img {
+        width: 80px;
+        height: 80px;
+        border-radius: var(--radius-sm);
+        object-fit: cover;
+        background: var(--surface);
+    }
+    .user-product-preview .product-info h4 {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .user-product-preview .product-info .category {
+        font-size: 11px;
+        color: var(--primary);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .user-product-preview .product-info .price {
+        font-size: 18px;
+        font-weight: 800;
+        margin-top: 4px;
+    }
+
+    @media (max-width: 1024px) {
+        .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+        .analytics-grid { grid-template-columns: repeat(2, 1fr); }
+        .user-card .user-stats { gap: 10px; }
+        .bar-row .bar-label { width: 90px; font-size: 12px; }
+        .user-card { flex-wrap: wrap; }
+        .user-card .user-stats { width: 100%; justify-content: space-around; margin-top: 8px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-header fade-in">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:4px;">
+        <a href="{% url 'dashboard:home' %}" style="color:var(--text-secondary);text-decoration:none;font-size:14px;">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <h1>Analytics Dashboard</h1>
+    </div>
+    <p>Track user engagement, product interactions, and lead temperatures.</p>
+</div>
+
+<div class="analytics-grid fade-in">
+    <div class="mini-stat">
+        <div class="ms-icon c1"><i class="fas fa-users"></i></div>
+        <div class="ms-value">{{ total_visitors }}</div>
+        <div class="ms-label">Total Visitors</div>
+    </div>
+    <div class="mini-stat">
+        <div class="ms-icon c6"><i class="fas fa-user-check"></i></div>
+        <div class="ms-value">{{ identified_visitors }}</div>
+        <div class="ms-label">Identified Users</div>
+    </div>
+    <div class="mini-stat">
+        <div class="ms-icon c2"><i class="fas fa-mouse-pointer"></i></div>
+        <div class="ms-value">{{ product_clicks }}</div>
+        <div class="ms-label">Product Clicks</div>
+    </div>
+    <div class="mini-stat">
+        <div class="ms-icon c3"><i class="fas fa-shopping-cart"></i></div>
+        <div class="ms-value">{{ cta_clicks }}</div>
+        <div class="ms-label">CTA / Buy Clicks</div>
+    </div>
+    <div class="mini-stat">
+        <div class="ms-icon c5"><i class="fas fa-clock"></i></div>
+        <div class="ms-value">{{ total_dwell_seconds }}s</div>
+        <div class="ms-label">Total Dwell Time</div>
+    </div>
+    <div class="mini-stat">
+        <div class="ms-icon c4"><i class="fas fa-bolt"></i></div>
+        <div class="ms-value">{{ total_events }}</div>
+        <div class="ms-label">Total Events</div>
+    </div>
+</div>
+
+<div class="two-col">
+    <div class="card fade-in-delay-1">
+        <div class="card-header">
+            <h3><i class="fas fa-hand-pointer" style="margin-right:8px;color:var(--info);"></i>Most Clicked Products</h3>
+        </div>
+        <div class="card-body">
+            {% if top_clicked %}
+                {% for item in top_clicked %}
+                <div class="bar-row">
+                    <div class="bar-label" title="{{ item.product__name }}">{{ item.product__name }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill blue" style="width:{% widthratio item.clicks top_clicked.0.clicks 100 %}%;">{{ item.clicks }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state"><i class="fas fa-chart-bar"></i>No product clicks yet</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card fade-in-delay-2">
+        <div class="card-header">
+            <h3><i class="fas fa-shopping-bag" style="margin-right:8px;color:var(--success);"></i>Most CTA / Buy Clicked</h3>
+        </div>
+        <div class="card-body">
+            {% if top_cta %}
+                {% for item in top_cta %}
+                <div class="bar-row">
+                    <div class="bar-label" title="{{ item.product__name }}">{{ item.product__name }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill green" style="width:{% widthratio item.clicks top_cta.0.clicks 100 %}%;">{{ item.clicks }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state"><i class="fas fa-shopping-bag"></i>No CTA clicks yet</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="two-col">
+    <div class="card fade-in-delay-2">
+        <div class="card-header">
+            <h3><i class="fas fa-hourglass-half" style="margin-right:8px;color:var(--warning);"></i>Most Time Spent (Dwell)</h3>
+        </div>
+        <div class="card-body">
+            {% if top_dwell %}
+                {% for item in top_dwell %}
+                <div class="bar-row">
+                    <div class="bar-label" title="{{ item.product__name }}">{{ item.product__name }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill orange" style="width:{% widthratio item.total_seconds top_dwell.0.total_seconds 100 %}%;">{{ item.total_seconds|floatformat:0 }}s</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state"><i class="fas fa-hourglass-half"></i>No dwell time data yet</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card fade-in-delay-3">
+        <div class="card-header">
+            <h3><i class="fas fa-arrows-alt-v" style="margin-right:8px;color:var(--danger);"></i>Highest Scroll Depth</h3>
+        </div>
+        <div class="card-body">
+            {% if top_scrolled %}
+                {% for item in top_scrolled %}
+                <div class="bar-row">
+                    <div class="bar-label" title="{{ item.product__name }}">{{ item.product__name }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill red" style="width:{{ item.max_depth }}%;">{{ item.max_depth|floatformat:0 }}%</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state"><i class="fas fa-arrows-alt-v"></i>No scroll data yet</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="card fade-in-delay-3" style="margin-bottom:24px;">
+    <div class="card-header">
+        <h3><i class="fas fa-trophy" style="margin-right:8px;color:var(--warning);"></i>Top Scored Products (Overall Engagement)</h3>
+    </div>
+    <div class="card-body">
+        {% if top_scored %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Total Score</th>
+                        <th>Unique Visitors</th>
+                        <th>Engagement Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in top_scored %}
+                    <tr>
+                        <td style="font-weight:800;color:var(--primary);">{{ forloop.counter }}</td>
+                        <td style="font-weight:700;">{{ item.product__name }}</td>
+                        <td>{{ item.total_score|floatformat:1 }}</td>
+                        <td>{{ item.unique_visitors }}</td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <div class="bar-track" style="width:120px;height:20px;">
+                                    {% widthratio item.total_score 100 100 as pct %}
+                                    <div class="bar-fill teal" style="width:{% if pct > 100 %}100{% else %}{{ pct }}{% endif %}%;">{{ item.total_score|floatformat:0 }}</div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><i class="fas fa-trophy"></i>No scored products yet</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card fade-in-delay-3" style="margin-bottom:24px;">
+    <div class="card-header">
+        <h3><i class="fas fa-chart-pie" style="margin-right:8px;color:var(--primary);"></i>Event Breakdown</h3>
+    </div>
+    <div class="card-body">
+        {% if event_breakdown %}
+        <div style="display:flex;flex-wrap:wrap;gap:12px;">
+            {% for ev in event_breakdown %}
+            <div style="background:var(--bg);border-radius:12px;padding:14px 20px;min-width:150px;text-align:center;">
+                <div style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:-0.5px;">{{ ev.count }}</div>
+                <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;font-weight:600;">{{ ev.label }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state"><i class="fas fa-chart-pie"></i>No events recorded yet</div>
+        {% endif %}
+    </div>
+</div>
+
+{% if per_user_summary %}
+<div class="card fade-in-delay-3" style="margin-bottom:24px;">
+    <div class="card-header">
+        <h3><i class="fas fa-user-friends" style="margin-right:8px;color:var(--primary);"></i>Identified Users Engagement</h3>
+        <span style="font-size:12px;color:var(--text-light);">{{ per_user_summary|length }} users tracked via Telegram</span>
+    </div>
+    <div class="card-body" style="padding:16px;">
+        {% for user in per_user_summary %}
+        <div class="user-card" onclick="toggleUserExpand('user-{{ forloop.counter }}')">
+            <div class="user-avatar">{{ user.username|truncatechars:2 }}</div>
+            <div class="user-info">
+                <div class="user-name">{{ user.username }}</div>
+                <div class="user-meta">Chat ID: {{ user.chat_id }}</div>
+            </div>
+            <div class="user-stats">
+                <div class="user-stat-item">
+                    <div class="sv" style="color:var(--info);">{{ user.product_clicks }}</div>
+                    <div class="sl">Clicks</div>
+                </div>
+                <div class="user-stat-item">
+                    <div class="sv" style="color:var(--success);">{{ user.cta_clicks }}</div>
+                    <div class="sl">CTA</div>
+                </div>
+                <div class="user-stat-item">
+                    <div class="sv" style="color:var(--warning);">{{ user.total_dwell }}s</div>
+                    <div class="sl">Dwell</div>
+                </div>
+                <div class="user-stat-item">
+                    <div class="sv" style="color:var(--primary);">{{ user.top_score }}</div>
+                    <div class="sl">Score</div>
+                </div>
+            </div>
+            <span class="temp-badge" style="background:{{ user.temp_color }}22;color:{{ user.temp_color }};">
+                <i class="fas fa-thermometer-half"></i> {{ user.temperature }}
+            </span>
+        </div>
+        <div class="user-expand" id="user-{{ forloop.counter }}">
+            {% if user.top_product_id %}
+            <div class="user-product-preview">
+                {% if user.top_product_image %}
+                <img src="{{ user.top_product_image }}" alt="{{ user.top_product_name }}">
+                {% else %}
+                <div style="width:80px;height:80px;border-radius:var(--radius-sm);background:var(--bg);display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-image" style="color:var(--text-light);"></i>
+                </div>
+                {% endif %}
+                <div class="product-info">
+                    <div class="category">{{ user.top_product_category }}</div>
+                    <h4>{{ user.top_product_name }}</h4>
+                    <div class="price">₹{{ user.top_product_price }}</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn-send" onclick="event.stopPropagation(); sendProductImage('{{ user.chat_id }}', {{ user.top_product_id }}, '', this)">
+                    <i class="fas fa-paper-plane"></i> Send Product Image
+                </button>
+                <a href="{% url 'ecommerce:product_detail' user.top_product_slug %}" class="btn btn-outline" style="font-size:13px;padding:10px 18px;" target="_blank" onclick="event.stopPropagation();">
+                    <i class="fas fa-external-link-alt"></i> View Product
+                </a>
+            </div>
+            <p style="font-size:12px;color:var(--text-light);margin-top:10px;">
+                <i class="fas fa-info-circle" style="margin-right:4px;"></i>
+                This product was selected based on the user's scrolling and clicking behavior.
+            </p>
+            {% else %}
+            <div style="margin-bottom:12px;">
+                <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+                    <i class="fas fa-info-circle" style="margin-right:6px;color:var(--warning);"></i>
+                    No engagement data yet. Send a product to get them interested.
+                </p>
+            </div>
+            {% if featured_products %}
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px;">
+                {% for fp in featured_products %}
+                <div style="background:var(--surface);border-radius:var(--radius-sm);padding:10px;border:1px solid var(--border);display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="event.stopPropagation(); sendProductImage('{{ user.chat_id }}', {{ fp.id }}, '', this)">
+                    {% if fp.image %}
+                    <img src="{{ fp.image }}" alt="{{ fp.name }}" style="width:44px;height:44px;border-radius:6px;object-fit:cover;">
+                    {% else %}
+                    <div style="width:44px;height:44px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-image" style="color:var(--text-light);font-size:14px;"></i>
+                    </div>
+                    {% endif %}
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ fp.name }}</div>
+                        <div style="font-size:11px;color:var(--primary);font-weight:600;">₹{{ fp.price }}</div>
+                    </div>
+                    <i class="fas fa-paper-plane" style="color:var(--primary);font-size:12px;"></i>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if user_engagement %}
+<div class="card fade-in-delay-3" style="margin-bottom:24px;">
+    <div class="card-header">
+        <h3><i class="fas fa-crosshairs" style="margin-right:8px;color:var(--danger);"></i>User-Product Engagement Matrix</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Product</th>
+                        <th>Score</th>
+                        <th>Visits</th>
+                        <th>Interest Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in user_engagement %}
+                    <tr>
+                        <td style="font-weight:700;">{{ item.visitor__username }}</td>
+                        <td>{{ item.product__name }}</td>
+                        <td style="font-weight:800;color:var(--primary);">{{ item.score|floatformat:1 }}</td>
+                        <td>{{ item.visits }}</td>
+                        <td>
+                            <div class="bar-track" style="width:100px;height:16px;display:inline-block;">
+                                {% widthratio item.score 50 100 as mpct %}
+                                <div class="bar-fill teal" style="width:{% if mpct > 100 %}100{% else %}{{ mpct }}{% endif %}%;font-size:10px;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if not per_user_summary and not user_engagement %}
+<div class="card fade-in-delay-3" style="margin-bottom:24px;">
+    <div class="card-header">
+        <h3><i class="fas fa-user-friends" style="margin-right:8px;color:var(--primary);"></i>Identified Users</h3>
+    </div>
+    <div class="card-body">
+        <div class="empty-state">
+            <i class="fas fa-user-clock"></i>
+            <p style="font-size:14px;">No identified users yet.</p>
+            <p style="font-size:13px;margin-top:4px;">Send bulk messages with links — when users click them, their <strong>chat_id</strong> is tracked automatically via the <code>?ref=</code> parameter.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleUserExpand(id) {
+    const el = document.getElementById(id);
+    if (el.classList.contains('open')) {
+        el.classList.remove('open');
+    } else {
+        document.querySelectorAll('.user-expand').forEach(e => e.classList.remove('open'));
+        el.classList.add('open');
+    }
+}
+</script>
+{% endblock %}

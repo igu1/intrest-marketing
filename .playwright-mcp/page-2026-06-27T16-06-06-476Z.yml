@@ -1,0 +1,128 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e5]: 
+      - generic [ref=e6]:
+        - heading "ShopPulse" [level=2] [ref=e7]
+        - generic [ref=e8]: Marketing Platform
+    - navigation [ref=e9]:
+      - generic [ref=e10]: Main
+      - link " Dashboard" [ref=e11] [cursor=pointer]:
+        - /url: /dashboard/
+        - generic [ref=e12]: 
+        - text: Dashboard
+      - link " Bulk Message" [ref=e13] [cursor=pointer]:
+        - /url: /dashboard/bulk-message/
+        - generic [ref=e14]: 
+        - text: Bulk Message
+      - generic [ref=e15]: Analytics
+      - link " Analytics" [ref=e16] [cursor=pointer]:
+        - /url: /dashboard/analytics/
+        - generic [ref=e17]: 
+        - text: Analytics
+      - link " E-Commerce" [ref=e18] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e19]: 
+        - text: E-Commerce
+      - link " Products" [ref=e20] [cursor=pointer]:
+        - /url: /products/
+        - generic [ref=e21]: 
+        - text: Products
+  - generic [ref=e22]:
+    - navigation [ref=e23]:
+      - generic [ref=e24]:
+        - text: 
+        - generic [ref=e25]:
+          - generic [ref=e26]: 
+          - textbox "Search..." [ref=e27]
+      - generic [ref=e28]:
+        - button "" [ref=e29] [cursor=pointer]:
+          - generic [ref=e30]: 
+        - button "" [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: 
+        - generic [ref=e34] [cursor=pointer]: S
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - link " Back" [ref=e38] [cursor=pointer]:
+            - /url: /dashboard/
+            - generic [ref=e39]: 
+            - text: Back
+          - heading "Bulk Telegram Message" [level=1] [ref=e40]
+        - paragraph [ref=e41]: Send personalized messages to multiple Telegram users at once.
+      - generic [ref=e42]:
+        - generic [ref=e44]:
+          - heading " Compose Message" [level=3] [ref=e46]:
+            - generic [ref=e47]: 
+            - text: Compose Message
+          - generic [ref=e48]:
+            - generic [ref=e49]:
+              - generic [ref=e50]: Attach Image (Optional)
+              - generic [ref=e51] [cursor=pointer]:
+                - button "Choose File" [ref=e52]
+                - generic [ref=e53]: 
+                - paragraph [ref=e54]: Drag & drop or click to upload an image
+            - generic [ref=e55]:
+              - generic [ref=e56]: Recipient Sheet (.xlsx)
+              - generic [ref=e57] [cursor=pointer]:
+                - button "Choose File" [ref=e58]
+                - generic [ref=e59]: 
+                - paragraph [ref=e60]:
+                  - text: "Upload Excel file with columns:"
+                  - strong [ref=e61]: name, chat_id, message
+                  - text: . A website link will be sent after each message.
+            - button " Send Messages" [ref=e63] [cursor=pointer]:
+              - generic [ref=e123]: 
+              - text: Send Messages
+        - generic [ref=e65]:
+          - generic [ref=e66]:
+            - heading " Quick Test" [level=3] [ref=e68]:
+              - generic [ref=e69]: 
+              - text: Quick Test
+            - generic [ref=e70]:
+              - generic [ref=e71]:
+                - generic [ref=e72]: Chat ID
+                - textbox "Enter Telegram chat ID" [ref=e73]
+              - generic [ref=e74]:
+                - generic [ref=e75]: Test Message
+                - textbox "Test message text" [ref=e76]
+              - generic [ref=e77]:
+                - generic [ref=e78]: Image (Optional)
+                - generic [ref=e79] [cursor=pointer]:
+                  - button "Choose File" [ref=e80]
+                  - generic [ref=e81]: 
+                  - paragraph [ref=e82]: Attach test image
+              - button " Send Test" [ref=e83] [cursor=pointer]:
+                - generic [ref=e84]: 
+                - text: Send Test
+          - generic [ref=e85]:
+            - heading " Recent Campaigns" [level=3] [ref=e87]:
+              - generic [ref=e88]: 
+              - text: Recent Campaigns
+            - table [ref=e91]:
+              - rowgroup [ref=e92]:
+                - row "Name Status Sent" [ref=e93]:
+                  - columnheader "Name" [ref=e94]
+                  - columnheader "Status" [ref=e95]
+                  - columnheader "Sent" [ref=e96]
+              - rowgroup [ref=e97]:
+                - row "Campaign 2026-06-27… Completed 2/2" [ref=e98]:
+                  - cell "Campaign 2026-06-27…" [ref=e99]
+                  - cell "Completed" [ref=e100]:
+                    - generic [ref=e101]: Completed
+                  - cell "2/2" [ref=e102]
+                - row "Campaign 2026-06-27… Completed 1/1" [ref=e103]:
+                  - cell "Campaign 2026-06-27…" [ref=e104]
+                  - cell "Completed" [ref=e105]:
+                    - generic [ref=e106]: Completed
+                  - cell "1/1" [ref=e107]
+                - row "Campaign 2026-06-27… Completed 1/1" [ref=e108]:
+                  - cell "Campaign 2026-06-27…" [ref=e109]
+                  - cell "Completed" [ref=e110]:
+                    - generic [ref=e111]: Completed
+                  - cell "1/1" [ref=e112]
+                - row "Campaign 2026-06-10… Completed 4/4" [ref=e113]:
+                  - cell "Campaign 2026-06-10…" [ref=e114]
+                  - cell "Completed" [ref=e115]:
+                    - generic [ref=e116]: Completed
+                  - cell "4/4" [ref=e117]

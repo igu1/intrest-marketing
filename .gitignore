@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+wheels/
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env*
+
+# IDE / Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Media / Uploads
+media/
+staticfiles/
+
+# Logs
+*.log
+*.log.*
+
+# Node (if any JS tooling)
+node_modules/
+
+# Project specific
+.env
+.env.local
+.env.production

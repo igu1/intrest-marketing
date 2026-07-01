@@ -1,0 +1,330 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e5]: 
+      - generic [ref=e6]:
+        - heading "ShopPulse" [level=2] [ref=e7]
+        - generic [ref=e8]: Marketing Platform
+    - navigation [ref=e9]:
+      - generic [ref=e10]: Main
+      - link " Dashboard" [ref=e11] [cursor=pointer]:
+        - /url: /dashboard/
+        - generic [ref=e12]: 
+        - text: Dashboard
+      - link " Bulk Message" [ref=e13] [cursor=pointer]:
+        - /url: /dashboard/bulk-message/
+        - generic [ref=e14]: 
+        - text: Bulk Message
+      - generic [ref=e15]: Analytics
+      - link " Analytics" [ref=e16] [cursor=pointer]:
+        - /url: /dashboard/analytics/
+        - generic [ref=e17]: 
+        - text: Analytics
+      - link " E-Commerce" [ref=e18] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e19]: 
+        - text: E-Commerce
+      - link " Products" [ref=e20] [cursor=pointer]:
+        - /url: /products/
+        - generic [ref=e21]: 
+        - text: Products
+  - generic [ref=e22]:
+    - navigation [ref=e23]:
+      - generic [ref=e24]:
+        - text: 
+        - generic [ref=e25]:
+          - generic [ref=e26]: 
+          - textbox "Search..." [ref=e27]
+      - generic [ref=e28]:
+        - button "" [ref=e29] [cursor=pointer]:
+          - generic [ref=e30]: 
+        - button "" [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: 
+        - generic [ref=e34] [cursor=pointer]: S
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - link " Back" [ref=e38] [cursor=pointer]:
+            - /url: /dashboard/
+            - generic [ref=e39]: 
+            - text: Back
+          - heading "Analytics Dashboard" [level=1] [ref=e40]
+        - paragraph [ref=e41]: Track user engagement, product interactions, and lead temperatures.
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - generic [ref=e45]: 
+          - generic [ref=e46]: "10"
+          - generic [ref=e47]: Total Visitors
+        - generic [ref=e48]:
+          - generic [ref=e50]: 
+          - generic [ref=e51]: "2"
+          - generic [ref=e52]: Identified Users
+        - generic [ref=e53]:
+          - generic [ref=e55]: 
+          - generic [ref=e56]: "17"
+          - generic [ref=e57]: Product Clicks
+        - generic [ref=e58]:
+          - generic [ref=e60]: 
+          - generic [ref=e61]: "28"
+          - generic [ref=e62]: CTA / Buy Clicks
+        - generic [ref=e63]:
+          - generic [ref=e65]: 
+          - generic [ref=e66]: 45727.0s
+          - generic [ref=e67]: Total Dwell Time
+        - generic [ref=e68]:
+          - generic [ref=e70]: 
+          - generic [ref=e71]: "300"
+          - generic [ref=e72]: Total Events
+      - generic [ref=e73]:
+        - generic [ref=e74]:
+          - heading " Most Clicked Products" [level=3] [ref=e76]:
+            - generic [ref=e77]: 
+            - text: Most Clicked Products
+          - generic [ref=e78]:
+            - generic [ref=e79]:
+              - generic "Running Shoes Elite" [ref=e80]
+              - generic [ref=e82]: "6"
+            - generic [ref=e83]:
+              - generic "Mechanical Keyboard RGB" [ref=e84]
+              - generic [ref=e86]: "5"
+            - generic [ref=e87]:
+              - generic "Smart Watch Ultra" [ref=e88]
+              - generic [ref=e90]: "2"
+            - generic [ref=e91]:
+              - generic "Sunglasses Aviator" [ref=e92]
+              - generic [ref=e94]: "2"
+            - generic [ref=e95]:
+              - generic "Wireless Pro Headphones" [ref=e96]
+              - generic [ref=e98]: "2"
+        - generic [ref=e99]:
+          - heading " Most CTA / Buy Clicked" [level=3] [ref=e101]:
+            - generic [ref=e102]: 
+            - text: Most CTA / Buy Clicked
+          - generic [ref=e103]:
+            - generic [ref=e104]:
+              - generic "Running Shoes Elite" [ref=e105]
+              - generic [ref=e107]: "14"
+            - generic [ref=e108]:
+              - generic "Sunglasses Aviator" [ref=e109]
+              - generic [ref=e111]: "6"
+            - generic [ref=e112]:
+              - generic "Wireless Pro Headphones" [ref=e113]
+              - generic [ref=e115]: "4"
+            - generic [ref=e116]:
+              - generic "Mechanical Keyboard RGB" [ref=e117]
+              - generic [ref=e119]: "3"
+            - generic [ref=e120]:
+              - generic "Smart Watch Ultra" [ref=e121]
+              - generic [ref=e123]: "1"
+      - generic [ref=e124]:
+        - generic [ref=e125]:
+          - heading " Most Time Spent (Dwell)" [level=3] [ref=e127]:
+            - generic [ref=e128]: 
+            - text: Most Time Spent (Dwell)
+          - generic [ref=e130]:
+            - generic "Mechanical Keyboard RGB" [ref=e131]
+            - generic [ref=e133]: 45727s
+        - generic [ref=e134]:
+          - heading " Highest Scroll Depth" [level=3] [ref=e136]:
+            - generic [ref=e137]: 
+            - text: Highest Scroll Depth
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - generic "None" [ref=e140]
+              - generic [ref=e142]: 100%
+            - generic [ref=e143]:
+              - generic "Mechanical Keyboard RGB" [ref=e144]
+              - generic [ref=e146]: 100%
+            - generic [ref=e147]:
+              - generic "Running Shoes Elite" [ref=e148]
+              - generic [ref=e150]: 100%
+            - generic [ref=e151]:
+              - generic "Smart Watch Ultra" [ref=e152]
+              - generic [ref=e154]: 100%
+            - generic [ref=e155]:
+              - generic "Wireless Pro Headphones" [ref=e156]
+              - generic [ref=e158]: 100%
+      - generic [ref=e159]:
+        - heading " Top Scored Products (Overall Engagement)" [level=3] [ref=e161]:
+          - generic [ref=e162]: 
+          - text: Top Scored Products (Overall Engagement)
+        - table [ref=e165]:
+          - rowgroup [ref=e166]:
+            - row "# Product Total Score Unique Visitors Engagement Level" [ref=e167]:
+              - columnheader "#" [ref=e168]
+              - columnheader "Product" [ref=e169]
+              - columnheader "Total Score" [ref=e170]
+              - columnheader "Unique Visitors" [ref=e171]
+              - columnheader "Engagement Level" [ref=e172]
+          - rowgroup [ref=e173]:
+            - row "1 Mechanical Keyboard RGB 1229.0 2 1229" [ref=e174]:
+              - cell "1" [ref=e175]
+              - cell "Mechanical Keyboard RGB" [ref=e176]
+              - cell "1229.0" [ref=e177]
+              - cell "2" [ref=e178]
+              - cell "1229" [ref=e179]:
+                - generic [ref=e182]: "1229"
+            - row "2 Running Shoes Elite 192.0 1 192" [ref=e183]:
+              - cell "2" [ref=e184]
+              - cell "Running Shoes Elite" [ref=e185]
+              - cell "192.0" [ref=e186]
+              - cell "1" [ref=e187]
+              - cell "192" [ref=e188]:
+                - generic [ref=e191]: "192"
+            - row "3 Sunglasses Aviator 78.0 1 78" [ref=e192]:
+              - cell "3" [ref=e193]
+              - cell "Sunglasses Aviator" [ref=e194]
+              - cell "78.0" [ref=e195]
+              - cell "1" [ref=e196]
+              - cell "78" [ref=e197]:
+                - generic [ref=e200]: "78"
+            - row "4 Wireless Pro Headphones 57.0 1 57" [ref=e201]:
+              - cell "4" [ref=e202]
+              - cell "Wireless Pro Headphones" [ref=e203]
+              - cell "57.0" [ref=e204]
+              - cell "1" [ref=e205]
+              - cell "57" [ref=e206]:
+                - generic [ref=e209]: "57"
+            - row "5 Smart Watch Ultra 20.4 1 20" [ref=e210]:
+              - cell "5" [ref=e211]
+              - cell "Smart Watch Ultra" [ref=e212]
+              - cell "20.4" [ref=e213]
+              - cell "1" [ref=e214]
+              - cell "20" [ref=e215]:
+                - generic [ref=e218]: "20"
+      - generic [ref=e219]:
+        - heading " Event Breakdown" [level=3] [ref=e221]:
+          - generic [ref=e222]: 
+          - text: Event Breakdown
+        - generic [ref=e224]:
+          - generic [ref=e225]:
+            - generic [ref=e226]: "17"
+            - generic [ref=e227]: Product Click
+          - generic [ref=e228]:
+            - generic [ref=e229]: "28"
+            - generic [ref=e230]: CTA Click
+          - generic [ref=e231]:
+            - generic [ref=e232]: "22"
+            - generic [ref=e233]: Section View
+          - generic [ref=e234]:
+            - generic [ref=e235]: "39"
+            - generic [ref=e236]: Scroll Depth
+          - generic [ref=e237]:
+            - generic [ref=e238]: "0"
+            - generic [ref=e239]: Gallery Interaction
+          - generic [ref=e240]:
+            - generic [ref=e241]: "0"
+            - generic [ref=e242]: Negative Signal
+          - generic [ref=e243]:
+            - generic [ref=e244]: "194"
+            - generic [ref=e245]: Dwell Time
+      - generic [ref=e246]:
+        - generic [ref=e247]:
+          - heading " Identified Users Engagement" [level=3] [ref=e248]:
+            - generic [ref=e249]: 
+            - text: Identified Users Engagement
+          - generic [ref=e250]: 3 users tracked via Telegram
+        - generic [ref=e251]:
+          - generic [ref=e252] [cursor=pointer]:
+            - generic [ref=e253]: J…
+            - generic [ref=e254]:
+              - generic [ref=e255]: John Doe
+              - generic [ref=e256]: "Chat ID: 1302898463"
+            - generic [ref=e257]:
+              - generic [ref=e258]:
+                - generic [ref=e259]: "11"
+                - generic [ref=e260]: Clicks
+              - generic [ref=e261]:
+                - generic [ref=e262]: "23"
+                - generic [ref=e263]: CTA
+              - generic [ref=e264]:
+                - generic [ref=e265]: 45727.0s
+                - generic [ref=e266]: Dwell
+              - generic [ref=e267]:
+                - generic [ref=e268]: "1218.0"
+                - generic [ref=e269]: Score
+            - generic [ref=e270]:
+              - generic [ref=e271]: 
+              - text: Ready to Buy
+          - text:                 
+          - generic [ref=e272] [cursor=pointer]:
+            - generic [ref=e273]: J…
+            - generic [ref=e274]:
+              - generic [ref=e275]: John Doe
+              - generic [ref=e276]: "Chat ID: 1302898463"
+            - generic [ref=e277]:
+              - generic [ref=e278]:
+                - generic [ref=e279]: "2"
+                - generic [ref=e280]: Clicks
+              - generic [ref=e281]:
+                - generic [ref=e282]: "4"
+                - generic [ref=e283]: CTA
+              - generic [ref=e284]:
+                - generic [ref=e285]: 0s
+                - generic [ref=e286]: Dwell
+              - generic [ref=e287]:
+                - generic [ref=e288]: "57.0"
+                - generic [ref=e289]: Score
+            - generic [ref=e290]:
+              - generic [ref=e291]: 
+              - text: Ready to Buy
+          - text:                 
+          - generic [ref=e292] [cursor=pointer]:
+            - generic [ref=e293]: S…
+            - generic [ref=e294]:
+              - generic [ref=e295]: Samshar
+              - generic [ref=e296]: "Chat ID: 730948904"
+            - generic [ref=e297]:
+              - generic [ref=e298]:
+                - generic [ref=e299]: "0"
+                - generic [ref=e300]: Clicks
+              - generic [ref=e301]:
+                - generic [ref=e302]: "0"
+                - generic [ref=e303]: CTA
+              - generic [ref=e304]:
+                - generic [ref=e305]: 0s
+                - generic [ref=e306]: Dwell
+              - generic [ref=e307]:
+                - generic [ref=e308]: "0"
+                - generic [ref=e309]: Score
+            - generic [ref=e310]:
+              - generic [ref=e311]: 
+              - text: Cold
+          - text:                 
+      - generic [ref=e312]:
+        - heading " User-Product Engagement Matrix" [level=3] [ref=e314]:
+          - generic [ref=e315]: 
+          - text: User-Product Engagement Matrix
+        - table [ref=e318]:
+          - rowgroup [ref=e319]:
+            - row "User Product Score Visits Interest Level" [ref=e320]:
+              - columnheader "User" [ref=e321]
+              - columnheader "Product" [ref=e322]
+              - columnheader "Score" [ref=e323]
+              - columnheader "Visits" [ref=e324]
+              - columnheader "Interest Level" [ref=e325]
+          - rowgroup [ref=e326]:
+            - row "John Doe Mechanical Keyboard RGB 1218.0 200" [ref=e327]:
+              - cell "John Doe" [ref=e328]
+              - cell "Mechanical Keyboard RGB" [ref=e329]
+              - cell "1218.0" [ref=e330]
+              - cell "200" [ref=e331]
+              - cell [ref=e332]
+            - row "John Doe Running Shoes Elite 192.0 20" [ref=e334]:
+              - cell "John Doe" [ref=e335]
+              - cell "Running Shoes Elite" [ref=e336]
+              - cell "192.0" [ref=e337]
+              - cell "20" [ref=e338]
+              - cell [ref=e339]
+            - row "John Doe Sunglasses Aviator 78.0 8" [ref=e341]:
+              - cell "John Doe" [ref=e342]
+              - cell "Sunglasses Aviator" [ref=e343]
+              - cell "78.0" [ref=e344]
+              - cell "8" [ref=e345]
+              - cell [ref=e346]
+            - row "John Doe Wireless Pro Headphones 57.0 6" [ref=e348]:
+              - cell "John Doe" [ref=e349]
+              - cell "Wireless Pro Headphones" [ref=e350]
+              - cell "57.0" [ref=e351]
+              - cell "6" [ref=e352]
+              - cell [ref=e353]

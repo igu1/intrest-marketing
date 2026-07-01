@@ -1,0 +1,540 @@
+{% extends "ecommerce/base.html" %}
+
+{% block title %}{{ product.name }} - ShopPulse{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pd-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 24px;
+        border: 1px solid var(--border-light);
+    }
+    .pd-gallery {
+        display: flex;
+        gap: 16px;
+    }
+    .pd-thumbs-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .pd-thumbs-list .thumb {
+        width: 56px;
+        height: 56px;
+        border-radius: var(--radius-sm);
+        border: 2px solid var(--border);
+        cursor: pointer;
+        overflow: hidden;
+        padding: 4px;
+        transition: var(--transition);
+    }
+    .pd-thumbs-list .thumb:hover, .pd-thumbs-list .thumb.active {
+        border-color: var(--amazon-orange);
+    }
+    .pd-thumbs-list .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .pd-main-img {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 400px;
+        position: relative;
+    }
+    .pd-main-img img {
+        max-width: 100%;
+        max-height: 400px;
+        object-fit: contain;
+        transition: var(--transition);
+    }
+    .pd-main-img:hover img { transform: scale(1.05); }
+    
+    .pd-info h1 {
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 1.3;
+        margin-bottom: 8px;
+    }
+    .pd-brand {
+        font-size: 14px;
+        color: var(--amazon-blue);
+        margin-bottom: 4px;
+    }
+    .pd-brand:hover { color: var(--amazon-red); text-decoration: underline; }
+    .pd-rating {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    .pd-rating .stars {
+        color: var(--amazon-orange);
+        font-size: 16px;
+    }
+    .pd-rating .count {
+        color: var(--amazon-blue);
+        font-size: 14px;
+    }
+    .pd-rating .divider {
+        color: var(--border);
+    }
+    .pd-rating .answered {
+        color: var(--text-secondary);
+        font-size: 14px;
+    }
+    
+    .pd-price-box {
+        border-top: 1px solid var(--border-light);
+        border-bottom: 1px solid var(--border-light);
+        padding: 12px 0;
+        margin: 12px 0;
+    }
+    .pd-price-box .price {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text);
+    }
+    .pd-price-box .price .original {
+        font-size: 16px;
+        color: var(--text-secondary);
+        text-decoration: line-through;
+        margin-left: 8px;
+        font-weight: 400;
+    }
+    .pd-price-box .save {
+        font-size: 14px;
+        color: var(--amazon-red);
+        margin-top: 4px;
+    }
+    .pd-price-box .tax {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+    }
+    
+    .pd-badge-box {
+        margin: 12px 0;
+    }
+    .pd-badge-box .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-right: 8px;
+        margin-bottom: 4px;
+    }
+    .pd-badge-box .badge.green { background: #e8f5e9; color: var(--amazon-green); }
+    .pd-badge-box .badge.blue { background: #e3f2fd; color: var(--amazon-blue); }
+    .pd-badge-box .badge.orange { background: #fff3e0; color: #f57c00; }
+    
+    .pd-desc-box {
+        font-size: 14px;
+        color: var(--text);
+        line-height: 1.6;
+        margin: 12px 0;
+    }
+    .pd-desc-box ul {
+        margin: 8px 0;
+        padding-left: 20px;
+    }
+    .pd-desc-box li { margin: 4px 0; }
+    
+    .pd-buy-box {
+        background: #f7f8fa;
+        border-radius: var(--radius);
+        padding: 20px;
+        border: 1px solid var(--border-light);
+    }
+    .pd-buy-box .price {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .pd-buy-box .delivery {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 8px 0;
+    }
+    .pd-buy-box .delivery .green { color: var(--amazon-green); font-weight: 600; }
+    .pd-buy-box .stock {
+        font-size: 14px;
+        color: var(--amazon-green);
+        font-weight: 600;
+        margin: 8px 0;
+    }
+    .pd-buy-box .qty {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 12px 0;
+    }
+    .pd-buy-box .qty select {
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        background: var(--surface);
+    }
+    
+    .pd-actions-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-top: 12px;
+    }
+    
+    .pd-secure {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .pd-tabs {
+        margin-top: 24px;
+        background: var(--surface);
+        border-radius: var(--radius);
+        border: 1px solid var(--border-light);
+        overflow: hidden;
+    }
+    .pd-tabs .tab-nav {
+        display: flex;
+        border-bottom: 1px solid var(--border-light);
+        background: #f7f8fa;
+    }
+    .pd-tabs .tab-nav button {
+        padding: 12px 24px;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: var(--transition);
+        color: var(--text-secondary);
+    }
+    .pd-tabs .tab-nav button.active {
+        color: var(--amazon-dark);
+        border-bottom-color: var(--amazon-orange);
+        background: var(--surface);
+    }
+    .pd-tabs .tab-nav button:hover { color: var(--text); }
+    .pd-tabs .tab-content {
+        padding: 24px;
+        display: none;
+    }
+    .pd-tabs .tab-content.active { display: block; }
+    
+    .related-section {
+        margin-top: 24px;
+    }
+    .related-section h2 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 16px;
+    }
+    
+    @media (max-width: 1024px) {
+        .pd-layout { grid-template-columns: 1fr; }
+        .pd-gallery { flex-direction: column; }
+        .pd-thumbs-list { flex-direction: row; }
+        .pd-buy-box { margin-top: 16px; }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="breadcrumb">
+    <a href="{% url 'ecommerce:home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <a href="{% url 'ecommerce:product_list' %}">Products</a>
+    <i class="fas fa-chevron-right"></i>
+    <a href="{% url 'ecommerce:product_list' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>{{ product.name|truncatechars:40 }}</span>
+</div>
+
+<div class="pd-layout">
+    <div class="pd-gallery">
+        <div class="pd-thumbs-list">
+            {% if product.image %}
+            <div class="thumb active" onclick="changeImage(this, '{{ product.image.url }}')">
+                <img src="{{ product.image.url }}" alt="">
+            </div>
+            {% endif %}
+            {% for img in product.gallery|slice:":5" %}
+            <div class="thumb" onclick="changeImage(this, '{{ img }}')">
+                <img src="{{ img }}" alt="">
+            </div>
+            {% endfor %}
+        </div>
+        <div class="pd-main-img" id="mainImage">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" id="mainImg">
+            {% else %}
+            <i class="fas fa-image" style="font-size:80px;color:#ccc;"></i>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="pd-info">
+        <div class="pd-brand">{{ product.category.name }}</div>
+        <h1>{{ product.name }}</h1>
+        <div class="pd-rating">
+            <span class="stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+            </span>
+            <span class="count">4.5 out of 5</span>
+            <span class="divider">|</span>
+            <span class="count">2,847 ratings</span>
+        </div>
+        
+        <div class="pd-badge-box">
+            <span class="badge green"><i class="fas fa-check-circle"></i> Amazon's Choice</span>
+            <span class="badge blue"><i class="fas fa-undo"></i> 30-Day Returns</span>
+            <span class="badge orange"><i class="fas fa-shield-alt"></i> 2-Year Warranty</span>
+        </div>
+        
+        <div class="pd-price-box">
+            <div class="price">
+                ₹{{ product.price }}
+                {% if product.original_price %}<span class="original">₹{{ product.original_price }}</span>{% endif %}
+            </div>
+            {% if product.discount_percent %}
+            <div class="save"><i class="fas fa-tag"></i> Save {{ product.discount_percent }}% - Limited time offer</div>
+            {% endif %}
+            <div class="tax">Inclusive of all taxes</div>
+        </div>
+        
+        <div class="pd-desc-box">
+            <p>{{ product.description|truncatechars:300 }}</p>
+            <ul>
+                <li>Premium quality materials</li>
+                <li>Fast and free delivery</li>
+                <li>30-day money-back guarantee</li>
+                <li>24/7 customer support</li>
+            </ul>
+        </div>
+        
+        <div class="lead-badge" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:4px;font-size:12px;font-weight:600;background:{{ lead_color }}22;color:{{ lead_color }};">
+            <i class="fas fa-thermometer-half"></i> Lead: {{ lead_temp }}
+        </div>
+    </div>
+    
+    <div class="pd-buy-box">
+        <div class="price">₹{{ product.price }}</div>
+        <div class="delivery">
+            <i class="fas fa-shipping-fast"></i> 
+            <span class="green">FREE delivery</span> Tomorrow. Order within <b>3 hrs 20 mins</b>
+        </div>
+        <div class="delivery">
+            <i class="fas fa-map-marker-alt"></i> Deliver to <b>Home</b>
+        </div>
+        <div class="stock"><i class="fas fa-check-circle"></i> In Stock</div>
+        <div class="qty">
+            <label>Qty:</label>
+            <select id="qtySelect">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+        <div class="pd-actions-grid">
+            <button class="btn-amazon btn-amazon-primary" onclick="addToCartWithQty({{ product.id }}, '{{ product.name|escapejs }}')">
+                <i class="fas fa-shopping-cart"></i> Add to Cart
+            </button>
+            <button class="btn-amazon btn-amazon-secondary" onclick="buyNow({{ product.id }})">
+                <i class="fas fa-bolt"></i> Buy Now
+            </button>
+            <button class="btn-amazon btn-amazon-outline" onclick="toggleWishlist(this, {{ product.id }})">
+                <i class="fas fa-heart"></i> Add to Wishlist
+            </button>
+        </div>
+        <div class="pd-secure">
+            <i class="fas fa-lock"></i> Secure transaction
+        </div>
+    </div>
+</div>
+
+<div class="pd-tabs">
+    <div class="tab-nav">
+        <button class="active" onclick="switchTab(this, 'desc')">Description</button>
+        <button onclick="switchTab(this, 'specs')">Specifications</button>
+        <button onclick="switchTab(this, 'reviews')">Reviews</button>
+    </div>
+    <div class="tab-content active" id="tab-desc">
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">About this item</h3>
+        <p style="font-size:14px;line-height:1.8;color:var(--text);">{{ product.description }}</p>
+        <div style="margin-top:16px;padding:16px;background:#f7f8fa;border-radius:var(--radius);">
+            <h4 style="font-size:14px;font-weight:700;margin-bottom:8px;">Features:</h4>
+            <ul style="font-size:14px;color:var(--text-secondary);padding-left:20px;">
+                <li>High-quality construction with premium materials</li>
+                <li>Designed for durability and long-lasting performance</li>
+                <li>Ergonomic design for comfortable use</li>
+                <li>Compatible with most standard setups</li>
+                <li>Easy to set up and use right out of the box</li>
+            </ul>
+        </div>
+    </div>
+    <div class="tab-content" id="tab-specs">
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">Product Information</h3>
+        <table style="width:100%;font-size:14px;border-collapse:collapse;">
+            <tr style="border-bottom:1px solid var(--border-light);">
+                <td style="padding:10px;color:var(--text-secondary);width:30%;">Brand</td>
+                <td style="padding:10px;font-weight:600;">ShopPulse</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border-light);">
+                <td style="padding:10px;color:var(--text-secondary);">Category</td>
+                <td style="padding:10px;font-weight:600;">{{ product.category.name }}</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border-light);">
+                <td style="padding:10px;color:var(--text-secondary);">Price</td>
+                <td style="padding:10px;font-weight:600;">₹{{ product.price }}</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border-light);">
+                <td style="padding:10px;color:var(--text-secondary);">Warranty</td>
+                <td style="padding:10px;font-weight:600;">2 Years</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border-light);">
+                <td style="padding:10px;color:var(--text-secondary);">Return Policy</td>
+                <td style="padding:10px;font-weight:600;">30-Day Returns</td>
+            </tr>
+            <tr>
+                <td style="padding:10px;color:var(--text-secondary);">Shipping</td>
+                <td style="padding:10px;font-weight:600;">Free Express Delivery</td>
+            </tr>
+        </table>
+    </div>
+    <div class="tab-content" id="tab-reviews">
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">Customer Reviews</h3>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+            <div style="font-size:48px;font-weight:700;">4.5</div>
+            <div>
+                <div style="color:var(--amazon-orange);font-size:20px;">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                </div>
+                <div style="font-size:14px;color:var(--text-secondary);">2,847 global ratings</div>
+            </div>
+        </div>
+        <div style="border-top:1px solid var(--border-light);padding-top:16px;">
+            <div style="margin-bottom:16px;">
+                <div style="font-weight:600;margin-bottom:4px;">Great product!</div>
+                <div style="color:var(--amazon-orange);font-size:14px;">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                </div>
+                <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;">Reviewed in the United States on June 1, 2026</div>
+                <p style="margin-top:8px;font-size:14px;">This is exactly what I was looking for. The quality is excellent and it arrived faster than expected. Highly recommend!</p>
+            </div>
+            <div style="margin-bottom:16px;">
+                <div style="font-weight:600;margin-bottom:4px;">Good value for money</div>
+                <div style="color:var(--amazon-orange);font-size:14px;">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                </div>
+                <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;">Reviewed in the United States on May 28, 2026</div>
+                <p style="margin-top:8px;font-size:14px;">Pretty good product. Works as described. Only minor issue is the packaging could be better.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if related %}
+<div class="related-section">
+    <h2>Related Products</h2>
+    <div class="product-grid-amazon">
+        {% for product in related %}
+        <div class="card-amazon" onclick="window.location='{% url 'ecommerce:product_detail' product.slug %}'">
+            <div class="card-img">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                <i class="fas fa-image" style="font-size:48px;color:#ccc;"></i>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="card-title">{{ product.name }}</div>
+                <div class="card-price">
+                    <span class="current">₹{{ product.price }}</span>
+                </div>
+                <div class="card-prime">
+                    <i class="fas fa-shipping-fast"></i> FREE Delivery
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-amazon btn-amazon-primary" onclick="event.stopPropagation(); addToCart({{ product.id }}, '{{ product.name|escapejs }}');">
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeImage(thumb, src) {
+    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+    thumb.classList.add('active');
+    document.getElementById('mainImg').src = src;
+    trackEvent('gallery_interaction', {{ product.id }}, 0, {image: src});
+}
+
+function switchTab(btn, tabId) {
+    document.querySelectorAll('.tab-nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + tabId).classList.add('active');
+}
+
+async function addToCartWithQty(productId, productName) {
+    const qty = document.getElementById('qtySelect').value;
+    try {
+        const resp = await fetch('/api/cart/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ product_id: productId, quantity: parseInt(qty) }),
+        });
+        const data = await resp.json();
+        if (data.ok) {
+            document.getElementById('cartCount').textContent = data.count;
+            document.getElementById('cartToastMsg').textContent = productName + ' (Qty: ' + qty + ')';
+            document.getElementById('cartToast').classList.add('show');
+            setTimeout(() => document.getElementById('cartToast').classList.remove('show'), 4000);
+            trackEvent('cta_click', productId, 0, {cta:'add_to_cart'});
+        }
+    } catch (e) {
+        console.error('Cart error:', e);
+    }
+}
+
+function buyNow(productId) {
+    addToCartWithQty(productId, 'Product').then(() => {
+        window.location.href = '/cart/';
+    });
+}
+
+document.body.dataset.productId = '{{ product.id }}';
+</script>
+{% endblock %}

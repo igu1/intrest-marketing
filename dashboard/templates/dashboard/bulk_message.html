@@ -1,0 +1,229 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Bulk Message - ShopPulse{% endblock %}
+
+{% block content %}
+<div class="fade-in" style="margin-bottom:32px;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;">
+        <a href="{% url 'dashboard:home' %}" style="color:var(--text-secondary);text-decoration:none;font-size:14px;">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <h1 style="font-size:24px;font-weight:700;">Bulk Telegram Message</h1>
+    </div>
+    <p style="color:var(--text-secondary);">Send personalized messages to multiple Telegram users at once.</p>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 380px;gap:24px;">
+    <div>
+        <form id="bulkForm" class="card fade-in-delay-1" style="margin-bottom:24px;">
+            <div class="card-header">
+                <h3><i class="fas fa-edit" style="margin-right:8px;color:var(--primary);"></i>Compose Message</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Attach Image (Optional)</label>
+                    <div class="file-upload" id="imageUpload">
+                        <input type="file" name="image" accept="image/*" id="imageInput">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag & drop or click to upload an image</p>
+                        <div class="file-name" id="imageFileName"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Recipient Sheet (.xlsx)</label>
+                    <div class="file-upload" id="sheetUpload">
+                        <input type="file" name="sheet" accept=".xlsx,.xls" id="sheetInput">
+                        <i class="fas fa-file-excel"></i>
+                        <p>Upload Excel file with columns: <strong>name, chat_id, message</strong>. A website link will be sent after each message.</p>
+                        <div class="file-name" id="sheetFileName"></div>
+                    </div>
+                </div>
+
+                <div class="progress-bar-container" id="progressBar">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+
+                <div style="display:flex;gap:12px;margin-top:20px;">
+                    <button type="submit" class="btn btn-primary" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i> Send Messages
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div>
+        <div class="card fade-in-delay-2" style="margin-bottom:24px;">
+            <div class="card-header">
+                <h3><i class="fas fa-flask" style="margin-right:8px;color:var(--warning);"></i>Quick Test</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>Chat ID</label>
+                    <input type="text" id="testChatId" placeholder="Enter Telegram chat ID">
+                </div>
+                <div class="form-group">
+                    <label>Test Message</label>
+                    <input type="text" id="testMessage" placeholder="Test message text">
+                </div>
+                <div class="form-group">
+                    <label>Image (Optional)</label>
+                    <div class="file-upload" style="padding:16px;">
+                        <input type="file" name="image" accept="image/*" id="testImageInput">
+                        <i class="fas fa-image" style="font-size:20px;"></i>
+                        <p style="font-size:12px;">Attach test image</p>
+                        <div class="file-name" id="testImageFileName"></div>
+                    </div>
+                </div>
+                <button class="btn btn-success" id="testBtn" style="width:100%;justify-content:center;">
+                    <i class="fas fa-vial"></i> Send Test
+                </button>
+            </div>
+        </div>
+
+        <div class="card fade-in-delay-3">
+            <div class="card-header">
+                <h3><i class="fas fa-list" style="margin-right:8px;color:var(--info);"></i>Recent Campaigns</h3>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Sent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for campaign in campaigns %}
+                            <tr>
+                                <td style="font-weight:500;font-size:13px;">{{ campaign.name|truncatechars:20 }}</td>
+                                <td><span class="status-badge {{ campaign.status }}">{{ campaign.get_status_display }}</span></td>
+                                <td>{{ campaign.total_sent }}/{{ campaign.total_sent|add:campaign.total_failed }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" style="text-align:center;color:var(--text-light);padding:24px;">
+                                    No campaigns yet
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media (max-width: 1024px) {
+        div[style*="grid-template-columns: 1fr 380px"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+        document.getElementById('imageFileName').textContent = e.target.files[0]?.name || '';
+    });
+    document.getElementById('sheetInput').addEventListener('change', function(e) {
+        document.getElementById('sheetFileName').textContent = e.target.files[0]?.name || '';
+    });
+    document.getElementById('testImageInput').addEventListener('change', function(e) {
+        document.getElementById('testImageFileName').textContent = e.target.files[0]?.name || '';
+    });
+
+    document.getElementById('bulkForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('sendBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const sheet = document.getElementById('sheetInput').files[0];
+
+        if (!sheet) { showToast('Please upload a recipient sheet.', 'error'); return; }
+
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div> Sending...';
+        progressBar.classList.add('active');
+
+        const formData = new FormData(this);
+
+        try {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress = Math.min(progress + Math.random() * 15, 90);
+                progressFill.style.width = progress + '%';
+            }, 500);
+
+            const resp = await fetch('{% url "dashboard:send_bulk" %}', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            const data = await resp.json();
+            clearInterval(interval);
+            progressFill.style.width = '100%';
+
+            if (data.ok) {
+                showToast(`Sent ${data.sent}/${data.total} messages! (${data.failed} failed)`, 'success');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showToast(data.error || 'Failed to send messages.', 'error');
+            }
+        } catch (err) {
+            showToast('Network error. Please try again.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Messages';
+            setTimeout(() => {
+                progressBar.classList.remove('active');
+                progressFill.style.width = '0%';
+            }, 2000);
+        }
+    });
+
+    document.getElementById('testBtn').addEventListener('click', async function() {
+        const chatId = document.getElementById('testChatId').value.trim();
+        const message = document.getElementById('testMessage').value.trim();
+        const image = document.getElementById('testImageInput').files[0];
+
+        if (!chatId) { showToast('Please enter a chat ID.', 'error'); return; }
+
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div> Sending...';
+
+        const formData = new FormData();
+        formData.append('chat_id', chatId);
+        formData.append('message', message || 'Test from ShopPulse Dashboard');
+        if (image) formData.append('image', image);
+
+        try {
+            const resp = await fetch('{% url "dashboard:test_message" %}', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            const data = await resp.json();
+            if (data.ok) {
+                showToast('Test message sent successfully!', 'success');
+            } else {
+                showToast(data.error || 'Failed to send test.', 'error');
+            }
+        } catch (err) {
+            showToast('Network error.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-vial"></i> Send Test';
+        }
+    });
+</script>
+{% endblock %}

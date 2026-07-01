@@ -1,0 +1,224 @@
+{% extends "ecommerce/base.html" %}
+
+{% block title %}Products - ShopPulse{% endblock %}
+
+{% block extra_css %}
+<style>
+    .results-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+    .results-bar h1 {
+        font-size: 21px;
+        font-weight: 700;
+    }
+    .results-bar .results-sort {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .results-bar .results-sort label {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+    .results-bar .results-sort select {
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        background: var(--surface);
+        cursor: pointer;
+    }
+    .filters-sidebar {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 16px;
+        border: 1px solid var(--border-light);
+    }
+    .filters-sidebar h3 {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-light);
+    }
+    .filter-group {
+        margin-bottom: 16px;
+    }
+    .filter-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .filter-group a {
+        display: block;
+        font-size: 14px;
+        color: var(--amazon-blue);
+        padding: 4px 0;
+        transition: var(--transition);
+    }
+    .filter-group a:hover { color: var(--amazon-red); text-decoration: underline; }
+    .filter-group a.active { font-weight: 700; color: var(--text); }
+    .filter-group a.active::before { content: '✓ '; color: var(--amazon-green); }
+    .price-filter {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    .price-filter input {
+        width: 60px;
+        padding: 6px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+    }
+    .price-filter button {
+        padding: 6px 12px;
+        background: var(--amazon-dark);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        cursor: pointer;
+    }
+    .layout-grid {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 20px;
+    }
+    @media (max-width: 1024px) {
+        .layout-grid { grid-template-columns: 1fr; }
+        .filters-sidebar { display: none; }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="breadcrumb">
+    <a href="{% url 'ecommerce:home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>Products</span>
+    {% if active_category %}
+    <i class="fas fa-chevron-right"></i>
+    <span>{{ active_category|title }}</span>
+    {% endif %}
+    {% if search_query %}
+    <i class="fas fa-chevron-right"></i>
+    <span>"{{ search_query }}"</span>
+    {% endif %}
+</div>
+
+<div class="results-bar">
+    <h1>
+        {% if search_query %}Results for "{{ search_query }}"{% else %}All Products{% endif %}
+        <span style="font-size:14px;font-weight:400;color:var(--text-secondary);">({{ products|length }} results)</span>
+    </h1>
+    <div class="results-sort">
+        <label>Sort by:</label>
+        <select onchange="window.location.href=this.value">
+            <option value="?{% if active_category %}category={{ active_category }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}sort=" {% if not sort_by %}selected{% endif %}>Featured</option>
+            <option value="?{% if active_category %}category={{ active_category }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}sort=price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+            <option value="?{% if active_category %}category={{ active_category }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}sort=price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+            <option value="?{% if active_category %}category={{ active_category }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}sort=name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+        </select>
+    </div>
+</div>
+
+<div class="layout-grid">
+    <aside class="filters-sidebar">
+        <h3>Category</h3>
+        <div class="filter-group">
+            <a href="{% url 'ecommerce:product_list' %}" class="{% if not active_category %}active{% endif %}">All Products</a>
+            {% for cat in categories %}
+            <a href="{% url 'ecommerce:product_list' %}?category={{ cat.slug }}" class="{% if active_category == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+            {% endfor %}
+        </div>
+        
+        <h3>Customer Reviews</h3>
+        <div class="filter-group">
+            <a href="#"><span style="color:var(--amazon-orange);"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></span> & Up</a>
+            <a href="#"><span style="color:var(--amazon-orange);"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i></span> & Up</a>
+            <a href="#"><span style="color:var(--amazon-orange);"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i></span> & Up</a>
+        </div>
+        
+        <h3>Price</h3>
+        <div class="filter-group">
+            <a href="#">Under ₹25</a>
+            <a href="#">₹25 to ₹50</a>
+            <a href="#">₹50 to ₹100</a>
+            <a href="#">₹100 to ₹200</a>
+            <a href="#">Over ₹200</a>
+        </div>
+        
+        <h3>Deals</h3>
+        <div class="filter-group">
+            <a href="#"><i class="fas fa-tag" style="color:var(--amazon-red);"></i> Today's Deals</a>
+            <a href="#"><i class="fas fa-percent" style="color:var(--amazon-green);"></i> Best Sellers</a>
+        </div>
+    </aside>
+    
+    <div>
+        {% if products %}
+        <div class="product-grid-amazon">
+            {% for product in products %}
+            <div class="card-amazon" onclick="window.location='{% url 'ecommerce:product_detail' product.slug %}'">
+                <div class="card-img">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                    <i class="fas fa-image" style="font-size:48px;color:#ccc;"></i>
+                    {% endif %}
+                    {% if product.discount_percent %}
+                    <span class="discount-badge">-{{ product.discount_percent }}%</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="card-title">{{ product.name }}</div>
+                    <div class="card-rating">
+                        <span class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </span>
+                        <span class="count">{{ forloop.counter|add:1234 }}</span>
+                    </div>
+                    <div class="card-price">
+                        <span class="current">₹{{ product.price }}</span>
+                        {% if product.original_price %}<span class="original">₹{{ product.original_price }}</span>{% endif %}
+                    </div>
+                    {% if product.discount_percent %}
+                    <div class="card-price"><span class="save">Save {{ product.discount_percent }}%</span></div>
+                    {% endif %}
+                    <div class="card-prime">
+                        <i class="fas fa-shipping-fast"></i> FREE Delivery
+                    </div>
+                    <div class="card-delivery">Get it by <b>Tomorrow</b></div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-amazon btn-amazon-primary" onclick="event.stopPropagation(); addToCart({{ product.id }}, '{{ product.name|escapejs }}');">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:80px 20px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border-light);">
+            <i class="fas fa-search" style="font-size:64px;color:var(--border);display:block;margin-bottom:16px;"></i>
+            <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;">No results found</h3>
+            <p style="color:var(--text-secondary);">Try checking your spelling or use different keywords.</p>
+            <a href="{% url 'ecommerce:product_list' %}" class="btn-amazon btn-amazon-primary mt-3" style="width:auto;display:inline-flex;">
+                <i class="fas fa-arrow-left"></i> View All Products
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

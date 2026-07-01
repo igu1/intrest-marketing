@@ -1,0 +1,290 @@
+{% extends "ecommerce/base.html" %}
+
+{% block title %}Shopping Cart - ShopPulse{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cart-layout {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 20px;
+    }
+    .cart-main {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 24px;
+        border: 1px solid var(--border-light);
+    }
+    .cart-main h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .cart-main .subtitle {
+        font-size: 14px;
+        color: var(--amazon-green);
+        font-weight: 600;
+        margin-bottom: 16px;
+    }
+    .cart-item {
+        display: grid;
+        grid-template-columns: 180px 1fr 150px;
+        gap: 16px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border-light);
+        align-items: start;
+    }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item .item-img {
+        width: 180px;
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f7f8fa;
+        border-radius: var(--radius-sm);
+    }
+    .cart-item .item-img img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    .cart-item .item-info h3 {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+    .cart-item .item-info h3 a:hover { color: var(--amazon-red); text-decoration: underline; }
+    .cart-item .item-info .stock {
+        font-size: 12px;
+        color: var(--amazon-green);
+        margin-bottom: 8px;
+    }
+    .cart-item .item-info .actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 8px;
+    }
+    .cart-item .item-info .actions select {
+        padding: 4px 8px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+    }
+    .cart-item .item-info .actions .sep {
+        color: var(--border);
+    }
+    .cart-item .item-info .actions a {
+        color: var(--amazon-blue);
+        font-size: 13px;
+    }
+    .cart-item .item-info .actions a:hover { color: var(--amazon-red); text-decoration: underline; }
+    .cart-item .item-price {
+        text-align: right;
+        font-size: 18px;
+        font-weight: 700;
+    }
+    .cart-item .item-price .each {
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 400;
+    }
+    
+    .cart-summary {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 20px;
+        border: 1px solid var(--border-light);
+        height: fit-content;
+    }
+    .cart-summary h2 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 16px;
+    }
+    .cart-summary .row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    .cart-summary .row.total {
+        font-size: 18px;
+        font-weight: 700;
+        border-top: 1px solid var(--border-light);
+        padding-top: 12px;
+        margin-top: 12px;
+    }
+    .cart-summary .checkout-btn {
+        margin-top: 16px;
+    }
+    .cart-summary .prime-box {
+        background: #f7f8fa;
+        border-radius: var(--radius-sm);
+        padding: 12px;
+        margin-top: 16px;
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+    .cart-summary .prime-box .green { color: var(--amazon-green); font-weight: 600; }
+    
+    .empty-cart {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    .empty-cart i {
+        font-size: 64px;
+        color: var(--border);
+        margin-bottom: 16px;
+    }
+    .empty-cart h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    .empty-cart p {
+        color: var(--text-secondary);
+        margin-bottom: 16px;
+    }
+    
+    @media (max-width: 1024px) {
+        .cart-layout { grid-template-columns: 1fr; }
+        .cart-item { grid-template-columns: 120px 1fr; }
+        .cart-item .item-price { grid-column: 1 / -1; text-align: left; margin-top: 8px; }
+        .cart-item .item-img { width: 120px; height: 120px; }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="breadcrumb">
+    <a href="{% url 'ecommerce:home' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>Shopping Cart</span>
+</div>
+
+{% if items %}
+<div class="cart-layout">
+    <div class="cart-main">
+        <h1>Shopping Cart</h1>
+        <div class="subtitle"><i class="fas fa-check-circle"></i> Eligible for FREE Delivery</div>
+        
+        {% for item in items %}
+        <div class="cart-item" id="cartItem{{ item.product.id }}">
+            <div class="item-img">
+                {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                {% else %}
+                <i class="fas fa-image" style="font-size:36px;color:#ccc;"></i>
+                {% endif %}
+            </div>
+            <div class="item-info">
+                <h3><a href="{% url 'ecommerce:product_detail' item.product.slug %}">{{ item.product.name }}</a></h3>
+                <div class="stock"><i class="fas fa-check-circle"></i> In Stock</div>
+                <div style="font-size:14px;color:var(--text-secondary);margin:4px 0;">
+                    <i class="fas fa-shipping-fast"></i> FREE delivery <b>Tomorrow</b>
+                </div>
+                <div class="actions">
+                    <select onchange="updateCart({{ item.product.id }}, this.value)">
+                        {% for i in "12345678910" %}
+                        <option value="{{ forloop.counter }}" {% if item.quantity == forloop.counter %}selected{% endif %}>Qty: {{ forloop.counter }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="sep">|</span>
+                    <a href="#" onclick="deleteCart({{ item.product.id }}); return false;">Delete</a>
+                    <span class="sep">|</span>
+                    <a href="#" onclick="toggleWishlist(this, {{ item.product.id }}); return false;">Save for later</a>
+                </div>
+            </div>
+            <div class="item-price">
+                <div>₹{{ item.subtotal|floatformat:2 }}</div>
+                <div class="each">₹{{ item.product.price }} each</div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <div style="text-align:right;font-size:18px;font-weight:700;margin-top:16px;">
+            Subtotal ({{ cart_count }} items): ₹{{ total|floatformat:2 }}
+        </div>
+    </div>
+    
+    <div class="cart-summary">
+        <h2>Order Summary</h2>
+        <div class="row">
+            <span>Items ({{ cart_count }}):</span>
+            <span>${{ total|floatformat:2 }}</span>
+        </div>
+        <div class="row">
+            <span>Shipping:</span>
+            <span style="color:var(--amazon-green);">FREE</span>
+        </div>
+        <div class="row">
+            <span>Tax:</span>
+            <span>$0.00</span>
+        </div>
+        <div class="row total">
+            <span>Order Total:</span>
+            <span>${{ total|floatformat:2 }}</span>
+        </div>
+        <button class="btn-amazon btn-amazon-primary checkout-btn" onclick="alert('Checkout coming soon!')">
+            <i class="fas fa-lock"></i> Proceed to Checkout
+        </button>
+        <div class="prime-box">
+            <span class="green"><i class="fas fa-shipping-fast"></i> FREE delivery</span> on your first order. Select this option at checkout.
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="empty-cart">
+    <i class="fas fa-shopping-cart"></i>
+    <h2>Your cart is empty</h2>
+    <p>Looks like you haven't added anything to your cart yet.</p>
+    <a href="{% url 'ecommerce:product_list' %}" class="btn-amazon btn-amazon-primary" style="width:auto;display:inline-flex;">
+        <i class="fas fa-shopping-bag"></i> Start Shopping
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function updateCart(productId, qty) {
+    try {
+        const resp = await fetch('/api/cart/update/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ product_id: productId, quantity: parseInt(qty) }),
+        });
+        const data = await resp.json();
+        if (data.ok) {
+            window.location.reload();
+        }
+    } catch (e) {
+        console.error('Cart update error:', e);
+    }
+}
+
+async function deleteCart(productId) {
+    try {
+        const resp = await fetch('/api/cart/remove/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ product_id: productId }),
+        });
+        const data = await resp.json();
+        if (data.ok) {
+            window.location.reload();
+        }
+    } catch (e) {
+        console.error('Cart remove error:', e);
+    }
+}
+</script>
+{% endblock %}

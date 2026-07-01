@@ -1,0 +1,909 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ShopPulse Store{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --amazon-dark: #131921;
+            --amazon-nav: #232f3e;
+            --amazon-orange: #febd69;
+            --amazon-orange-hover: #f3a847;
+            --amazon-blue: #007185;
+            --amazon-red: #b12704;
+            --amazon-green: #007600;
+            --bg: #e3e6e6;
+            --surface: #ffffff;
+            --text: #0f1111;
+            --text-secondary: #565959;
+            --text-light: #999;
+            --border: #d5d9d9;
+            --border-light: #eaeded;
+            --radius: 8px;
+            --radius-sm: 4px;
+            --shadow-sm: 0 2px 5px rgba(0,0,0,0.1);
+            --shadow: 0 2px 4px 0 rgba(0,0,0,0.13);
+            --shadow-lg: 0 4px 8px rgba(0,0,0,0.2);
+            --transition: all 0.2s ease;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+        
+        /* ─── Header ─── */
+        .header {
+            background: var(--amazon-dark);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-top {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            gap: 12px;
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+        .logo:hover { border-color: #fff; }
+        .logo i { color: var(--amazon-orange); margin-right: 8px; font-size: 28px; }
+        
+        .location-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #fff;
+            padding: 6px 8px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .location-btn:hover { border-color: #fff; }
+        .location-btn .loc-small { font-size: 12px; color: #ccc; display: block; }
+        .location-btn .loc-big { font-size: 14px; font-weight: 700; }
+        
+        .search-bar {
+            flex: 1;
+            display: flex;
+            max-width: 800px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+        .search-bar select {
+            background: #f3f3f3;
+            border: none;
+            padding: 0 8px;
+            font-size: 12px;
+            color: #555;
+            cursor: pointer;
+            border-right: 1px solid #cdcdcd;
+        }
+        .search-bar input {
+            flex: 1;
+            border: none;
+            padding: 0 12px;
+            font-size: 15px;
+            outline: none;
+        }
+        .search-bar button {
+            background: var(--amazon-orange);
+            border: none;
+            padding: 0 16px;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--amazon-dark);
+            transition: var(--transition);
+        }
+        .search-bar button:hover { background: var(--amazon-orange-hover); }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn {
+            color: #fff;
+            padding: 6px 8px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            transition: var(--transition);
+            cursor: pointer;
+            text-align: left;
+        }
+        .nav-btn:hover { border-color: #fff; }
+        .nav-btn .small { font-size: 12px; color: #ccc; display: block; }
+        .nav-btn .big { font-size: 14px; font-weight: 700; }
+        
+        .cart-btn {
+            display: flex;
+            align-items: flex-end;
+            color: #fff;
+            padding: 6px 8px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+        .cart-btn:hover { border-color: #fff; }
+        .cart-btn i { font-size: 28px; }
+        .cart-btn .cart-count {
+            position: absolute;
+            top: 2px;
+            right: 8px;
+            background: var(--amazon-orange);
+            color: var(--amazon-dark);
+            font-size: 14px;
+            font-weight: 700;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cart-btn .cart-label {
+            font-size: 14px;
+            font-weight: 700;
+            margin-left: 2px;
+        }
+        
+        /* ─── Sub Nav ─── */
+        .sub-nav {
+            background: var(--amazon-nav);
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+        .sub-nav a {
+            color: #fff;
+            font-size: 14px;
+            padding: 4px 6px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+        .sub-nav a:hover { border-color: #fff; }
+        .sub-nav a.active { font-weight: 600; }
+        .sub-nav .menu-all {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 700;
+        }
+        
+        /* ─── Main Container ─── */
+        .main {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 20px 16px;
+            min-height: 60vh;
+        }
+        
+        /* ─── Breadcrumb ─── */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        .breadcrumb a { color: var(--amazon-blue); }
+        .breadcrumb a:hover { text-decoration: underline; color: var(--amazon-red); }
+        .breadcrumb i { font-size: 10px; }
+        
+        /* ─── Buttons ─── */
+        .btn-amazon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            width: 100%;
+        }
+        .btn-amazon-primary {
+            background: #ffd814;
+            border: 1px solid #fcd200;
+            color: var(--text);
+        }
+        .btn-amazon-primary:hover { background: #f7ca00; }
+        .btn-amazon-secondary {
+            background: #ffa41c;
+            border: 1px solid #ff8f00;
+            color: var(--text);
+        }
+        .btn-amazon-secondary:hover { background: #fa8900; }
+        .btn-amazon-outline {
+            background: #fff;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .btn-amazon-outline:hover { background: var(--bg); }
+        .btn-amazon-dark {
+            background: var(--amazon-dark);
+            border: 1px solid var(--amazon-dark);
+            color: #fff;
+        }
+        .btn-amazon-dark:hover { background: #232f3e; }
+        
+        /* ─── Product Cards ─── */
+        .card-amazon {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+        }
+        .card-amazon:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        .card-amazon .card-img {
+            position: relative;
+            height: 200px;
+            background: #f7f8fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 16px;
+        }
+        .card-amazon .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: var(--transition);
+        }
+        .card-amazon:hover .card-img img { transform: scale(1.05); }
+        .card-amazon .card-body {
+            padding: 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-amazon .card-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+            line-height: 1.4;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-amazon .card-title:hover { color: var(--amazon-red); }
+        .card-amazon .card-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin: 4px 0;
+        }
+        .card-amazon .card-rating .stars {
+            color: var(--amazon-orange);
+            font-size: 14px;
+        }
+        .card-amazon .card-rating .count {
+            font-size: 12px;
+            color: var(--amazon-blue);
+        }
+        .card-amazon .card-price {
+            margin: 8px 0;
+        }
+        .card-amazon .card-price .current {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .card-amazon .card-price .original {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: line-through;
+            margin-left: 4px;
+        }
+        .card-amazon .card-price .save {
+            font-size: 12px;
+            color: var(--amazon-red);
+            font-weight: 500;
+        }
+        .card-amazon .card-prime {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--amazon-green);
+            font-weight: 600;
+            margin: 4px 0;
+        }
+        .card-amazon .card-delivery {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .card-amazon .card-actions {
+            padding: 12px;
+            padding-top: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .card-amazon .discount-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: var(--amazon-red);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 700;
+            z-index: 2;
+        }
+        .card-amazon .wishlist-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            z-index: 2;
+        }
+        .card-amazon .wishlist-btn:hover { color: var(--amazon-red); }
+        .card-amazon .wishlist-btn.active { color: var(--amazon-red); }
+        
+        /* ─── Section ─── */
+        .section-amazon {
+            margin-bottom: 24px;
+        }
+        .section-header-amazon {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .section-header-amazon h2 {
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .section-header-amazon a {
+            color: var(--amazon-blue);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .section-header-amazon a:hover { color: var(--amazon-red); text-decoration: underline; }
+        
+        /* ─── Product Grid ─── */
+        .product-grid-amazon {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        
+        /* ─── Banner ─── */
+        .banner-amazon {
+            background: linear-gradient(135deg, #fff 0%, #f3f3f3 100%);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+        }
+        .banner-amazon h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+        .banner-amazon p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 600px;
+        }
+        .banner-amazon .banner-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--amazon-dark);
+            color: #fff;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 16px;
+            transition: var(--transition);
+        }
+        .banner-amazon .banner-btn:hover { background: var(--amazon-nav); }
+        
+        /* ─── Toast / Cart Popup ─── */
+        .cart-toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow-lg);
+            z-index: 10000;
+            display: none;
+            min-width: 280px;
+            animation: slideIn 0.3s ease;
+        }
+        .cart-toast.show { display: block; }
+        .cart-toast h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--amazon-green);
+        }
+        .cart-toast p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        .cart-toast .toast-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* ─── Footer ─── */
+        .footer-back {
+            background: #37475a;
+            color: #fff;
+            text-align: center;
+            padding: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .footer-back:hover { background: #485769; }
+        
+        .footer-main {
+            background: var(--amazon-nav);
+            color: #fff;
+            padding: 40px 16px;
+        }
+        .footer-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+        .footer-col h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+        .footer-col a {
+            display: block;
+            color: #ddd;
+            font-size: 14px;
+            padding: 4px 0;
+            transition: var(--transition);
+        }
+        .footer-col a:hover { text-decoration: underline; }
+        
+        .footer-bottom {
+            background: var(--amazon-dark);
+            border-top: 1px solid #3a4553;
+            padding: 24px 16px;
+            text-align: center;
+        }
+        .footer-bottom .logo { color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .footer-bottom p { color: #aaa; font-size: 12px; }
+        
+        /* ─── Responsive ─── */
+        @media (max-width: 1024px) {
+            .header-top { padding: 8px; }
+            .location-btn { display: none; }
+            .search-bar { margin: 0 8px; }
+            .nav-btn .small { display: none; }
+            .product-grid-amazon { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+            .footer-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 640px) {
+            .sub-nav { overflow-x: auto; white-space: nowrap; }
+            .search-bar { height: 36px; }
+            .search-bar select { display: none; }
+            .header-top { flex-wrap: wrap; }
+            .product-grid-amazon { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr; }
+            .cart-btn .cart-label { display: none; }
+        }
+        
+        /* ─── Utilities ─── */
+        .text-success { color: var(--amazon-green); }
+        .text-danger { color: var(--amazon-red); }
+        .text-primary { color: var(--amazon-blue); }
+        .mt-2 { margin-top: 8px; }
+        .mt-3 { margin-top: 12px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-3 { margin-bottom: 12px; }
+        
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-top-color: var(--amazon-dark);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .btn-send {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            background: var(--amazon-orange);
+            color: var(--amazon-dark);
+        }
+        .btn-send:hover { background: var(--amazon-orange-hover); }
+        .btn-send:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        /* ─── Floating Action Button ─── */
+        .fab {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 9999;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #25d366;
+            border: none;
+            box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: #fff;
+            font-size: 28px;
+        }
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 24px rgba(37, 211, 102, 0.6);
+        }
+        .fab:active { transform: scale(0.95); }
+        
+        @media (max-width: 640px) {
+            .fab { width: 50px; height: 50px; font-size: 24px; bottom: 20px; right: 20px; }
+        }
+        .send-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .send-status.success { background: #f0f9eb; color: var(--amazon-green); }
+        .send-status.error { background: #fef0f0; color: #f56c6c; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <a href="{% url 'ecommerce:home' %}" class="logo">
+<i class="fas fa-bolt"></i> ShopPulse
+            </a>
+            
+            <div class="location-btn">
+                <div>
+                    <span class="loc-small">Deliver to</span>
+                    <span class="loc-big"><i class="fas fa-map-marker-alt"></i> Home</span>
+                </div>
+            </div>
+            
+            <form class="search-bar" action="{% url 'ecommerce:product_list' %}" method="GET">
+                <select name="category">
+                    <option value="">All</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.slug }}" {% if active_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" name="q" placeholder="Search ShopPulse" value="{{ search_query|default:'' }}">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+            
+            <div class="header-nav">
+                <a href="{% url 'ecommerce:analytics' %}" class="nav-btn">
+                    <span class="small">Hello, User</span>
+                    <span class="big">Analytics</span>
+                </a>
+                <a href="{% url 'dashboard:home' %}" class="nav-btn" target="_blank">
+                    <span class="small">Admin</span>
+                    <span class="big">Dashboard</span>
+                </a>
+                <a href="{% url 'ecommerce:cart' %}" class="cart-btn">
+                    <span class="cart-count" id="cartCount">{{ cart_count|default:0 }}</span>
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-label">Cart</span>
+                </a>
+            </div>
+        </div>
+        
+        <nav class="sub-nav">
+            <a href="{% url 'ecommerce:product_list' %}" class="menu-all">
+                <i class="fas fa-bars"></i> All
+            </a>
+            <a href="{% url 'ecommerce:home' %}" class="{% if request.path == '/' %}active{% endif %}">Home</a>
+            <a href="{% url 'ecommerce:product_list' %}" class="{% if 'products' in request.path and not request.resolver_match.kwargs.slug %}active{% endif %}">Products</a>
+            <a href="{% url 'ecommerce:product_list' %}?category=electronics">Electronics</a>
+            <a href="{% url 'ecommerce:product_list' %}?category=clothing">Clothing</a>
+            <a href="{% url 'ecommerce:product_list' %}?category=home-living">Home & Living</a>
+            <a href="{% url 'ecommerce:product_list' %}?category=sports">Sports</a>
+            <a href="{% url 'ecommerce:product_list' %}?category=accessories">Accessories</a>
+            <a href="{% url 'ecommerce:analytics' %}">Analytics</a>
+        </nav>
+    </header>
+    
+    <div class="cart-toast" id="cartToast">
+        <h4><i class="fas fa-check-circle"></i> Added to Cart</h4>
+        <p id="cartToastMsg">Product added successfully!</p>
+        <div class="toast-actions">
+            <a href="{% url 'ecommerce:cart' %}" class="btn-amazon btn-amazon-secondary">Go to Cart</a>
+            <button class="btn-amazon btn-amazon-outline" onclick="document.getElementById('cartToast').classList.remove('show')">Continue</button>
+        </div>
+    </div>
+
+    <main class="main">
+        {% block body %}{% endblock %}
+    </main>
+
+    <div class="footer-back" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        Back to top
+    </div>
+    
+    <footer class="footer-main">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>Get to Know Us</h4>
+                <a href="#">About ShopPulse</a>
+                <a href="#">Careers</a>
+                <a href="#">Press Releases</a>
+                <a href="#">Blog</a>
+            </div>
+            <div class="footer-col">
+                <h4>Connect with Us</h4>
+                <a href="#"><i class="fab fa-facebook"></i> Facebook</a>
+                <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
+            </div>
+            <div class="footer-col">
+                <h4>Make Money with Us</h4>
+                <a href="#">Sell on ShopPulse</a>
+                <a href="#">Become an Affiliate</a>
+                <a href="#">Advertise</a>
+            </div>
+            <div class="footer-col">
+                <h4>Let Us Help You</h4>
+                <a href="#">Your Account</a>
+                <a href="#">Returns Centre</a>
+                <a href="#">100% Purchase Protection</a>
+                <a href="#">Help</a>
+            </div>
+        </div>
+    </footer>
+    
+    <div class="footer-bottom">
+        <div class="logo"><i class="fas fa-bolt"></i> ShopPulse</div>
+        <p>&copy; 2026 ShopPulse. All Rights Reserved.</p>
+    </div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let c of cookies) {
+                    c = c.trim();
+                    if (c.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(c.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        async function trackEvent(eventType, productId, value, metadata) {
+            try {
+                await fetch('{% url "ecommerce:track_event" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        event_type: eventType,
+                        product_id: productId || null,
+                        value: value || 0,
+                        metadata: metadata || {},
+                    }),
+                });
+            } catch (e) {
+                console.error('Track error:', e);
+            }
+        }
+        
+        async function addToCart(productId, productName) {
+            try {
+                const resp = await fetch('/api/cart/add/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({ product_id: productId, quantity: 1 }),
+                });
+                const data = await resp.json();
+                if (data.ok) {
+                    document.getElementById('cartCount').textContent = data.count;
+                    document.getElementById('cartToastMsg').textContent = productName || 'Product added successfully!';
+                    document.getElementById('cartToast').classList.add('show');
+                    setTimeout(() => document.getElementById('cartToast').classList.remove('show'), 4000);
+                    trackEvent('cta_click', productId, 0, {cta:'add_to_cart'});
+                }
+            } catch (e) {
+                console.error('Cart error:', e);
+            }
+        }
+        
+        async function toggleWishlist(btn, productId) {
+            btn.classList.toggle('active');
+            const isActive = btn.classList.contains('active');
+            trackEvent('cta_click', productId, 0, {cta: isActive ? 'wishlist_add' : 'wishlist_remove'});
+        }
+        
+        // Scroll depth tracking
+        let maxScroll = 0;
+        const scrollThresholds = [25, 50, 75, 100];
+        let awardedScrolls = new Set();
+        
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            if (docHeight <= 0) return;
+            const scrollPercent = Math.round((scrollTop / docHeight) * 100);
+            
+            scrollThresholds.forEach(threshold => {
+                if (scrollPercent >= threshold && !awardedScrolls.has(threshold)) {
+                    awardedScrolls.add(threshold);
+                    const productId = document.body.dataset.productId || null;
+                    trackEvent('scroll_depth', productId, threshold, { threshold });
+                }
+            });
+        });
+        
+        // Section view tracking
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    const section = e.target.dataset.section;
+                    if (section) {
+                        const productId = document.body.dataset.productId || null;
+                        trackEvent('section_view', productId, 0, { section });
+                    }
+                    sectionObserver.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        document.querySelectorAll('[data-section]').forEach(el => sectionObserver.observe(el));
+        
+        // Dwell time tracking
+        let dwellStartTime = Date.now();
+        let isTabActive = true;
+        
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                isTabActive = false;
+            } else {
+                isTabActive = true;
+                dwellStartTime = Date.now();
+            }
+        });
+        
+        setInterval(() => {
+            if (!isTabActive) return;
+            const seconds = Math.floor((Date.now() - dwellStartTime) / 1000);
+            if (seconds >= 20) {
+                const productId = document.body.dataset.productId || null;
+                fetch('{% url "ecommerce:update_dwell" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({ product_id: productId, seconds }),
+                });
+                dwellStartTime = Date.now();
+            }
+        }, 20000);
+    </script>
+    {% block extra_js %}{% endblock %}
+
+    <a href="https://wa.me/1234567890" target="_blank" class="fab" aria-label="Contact us on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+</body>
+</html>
